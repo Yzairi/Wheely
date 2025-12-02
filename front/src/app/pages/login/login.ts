@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule, RouterModule],
   templateUrl: './login.html',
+  styleUrl: './login.css',
 })
 export class Login {
   private fb = inject(FormBuilder);
@@ -29,5 +30,9 @@ export class Login {
       next: () => this.router.navigate(['/']),
       error: () => (this.error = 'Identifiants incorrects'),
     });
+  }
+
+  loginWithGoogle(): void {
+    this.error = 'Connexion Google en préparation 🚧';
   }
 }
