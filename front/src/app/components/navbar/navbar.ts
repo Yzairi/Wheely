@@ -26,9 +26,4 @@ export class Navbar {
   isLoggedIn() {
     return this.auth.isLoggedIn();
   }
-
-  logout() {
-    this.auth.logout();
-    this.router.navigate(['/login']);
-  }
 }

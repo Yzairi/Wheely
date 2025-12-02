@@ -1,0 +1,61 @@
+section.account {
+  max-width: 720px;
+  margin: 40px auto;
+  padding: 32px;
+  border-radius: 24px;
+  background-color: var(--accent-color, #f4f6f5);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+section.account header h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+}
+
+section.account header p {
+  margin: 0;
+  color: #333;
+}
+
+.account-actions {
+  margin: 32px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.account-actions button {
+  flex: 1 1 30%;
+  min-width: 180px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.account-actions button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.logout {
+  background-color: #c62828;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.logout:hover {
+  background-color: #b71c1c;
+}
