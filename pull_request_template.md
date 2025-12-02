@@ -13,9 +13,6 @@
 # 3. Checklist ✅
 ### Frontend 🎨
 - [ ] UI responsive vérifiée (desktop & mobile) 📱💻
-- [ ] `npm run test` / `npm run lint`
 
 ### Backend 🧠
 - [ ] Tests unitaires 🧪
-- [ ] Tests d’intégration / e2e
-- [ ] Migration / seed exécutés (si nécessaire)
