@@ -26,7 +26,7 @@ export class Login {
     if (!this.form.valid) return;
 
     this.auth.login(this.form.value as { username: string; password: string }).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => this.router.navigate(['/']),
       error: () => (this.error = 'Identifiants incorrects'),
     });
   }

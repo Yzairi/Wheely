@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { Auth } from '../../services/auth';
 
 @Component({
@@ -11,6 +11,17 @@ import { Auth } from '../../services/auth';
 })
 export class Navbar {
   private auth = inject(Auth);
+  private router = inject(Router);
+
+  protected readonly menuOpen = signal(false);
+
+  protected toggleMenu(): void {
+    this.menuOpen.update((isOpen) => !isOpen);
+  }
+
+  protected closeMenu(): void {
+    this.menuOpen.set(false);
+  }
 
   isLoggedIn() {
     return this.auth.isLoggedIn();
@@ -18,5 +29,6 @@ export class Navbar {
 
   logout() {
     this.auth.logout();
+    this.router.navigate(['/login']);
   }
 }
