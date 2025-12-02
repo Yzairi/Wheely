@@ -1,0 +1,9 @@
+<nav class="main-nav">
+  <a routerLink="/">Home</a>
+  <a routerLink="/annonce">Annonce</a>
+  @if (isLoggedIn()) {
+  <button (click)="logout()">Déconnexion</button>
+  } @else {
+  <a routerLink="/login">Connexion</a>
+  }
+</nav>
