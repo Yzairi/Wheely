@@ -1,9 +1,27 @@
-<nav class="main-nav">
-  <a routerLink="/">Home</a>
-  <a routerLink="/annonce">Annonce</a>
-  @if (isLoggedIn()) {
-  <button (click)="logout()">Déconnexion</button>
-  } @else {
-  <a routerLink="/login">Connexion</a>
-  }
+<nav [class.menu-open]="menuOpen()">
+  <a class="logo" routerLink="/" (click)="closeMenu()">
+    <img src="/logo.png" alt="logo" height="40" />
+  </a>
+
+  <button
+    class="burger"
+    type="button"
+    (click)="toggleMenu()"
+    aria-label="Menu"
+    [attr.aria-expanded]="menuOpen()"
+  >
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <div class="links" [class.open]="menuOpen()">
+    <a routerLink="/" (click)="closeMenu()">Home</a>
+    <a routerLink="/annonce" (click)="closeMenu()">Annonce</a>
+    @if (isLoggedIn()) {
+    <a (click)="logout()">Déconnexion</a>
+    } @else {
+    <a routerLink="/login">Connexion</a>
+    }
+  </div>
 </nav>
