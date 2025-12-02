@@ -1,0 +1,16 @@
+<h2>Connexion</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <input formControlName="username" placeholder="Nom d'utilisateur" />
+  <input formControlName="password" placeholder="Mot de passe" type="password" />
+
+  <button type="submit">Login</button>
+</form>
+
+@if (error){
+<div style="color: red">
+  {{ error }}
+</div>
+}
+
+<p>Pas de compte ? <a routerLink="/register">Inscrivez-vous</a></p>
