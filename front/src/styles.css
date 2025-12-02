@@ -1,7 +1,9 @@
-:root { 
+:root {
   --main-color: #005C53;
   --accent-color: #E3F1E8;
 }
+
+* { font-family: 'Space Grotesk', 'Roboto', sans-serif; }
 a {
 	text-decoration: none;
 	color: inherit;
