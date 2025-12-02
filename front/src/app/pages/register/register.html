@@ -1,0 +1,34 @@
+<h2>Créer un compte</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <label> Nom d'utilisateur </label>
+  <input formControlName="username" placeholder="Username" />
+  @if (form.controls.username.invalid && form.controls.username.touched){
+  <p style="color: red">Nom d'utilisateur requis</p>
+  }
+  <br />
+
+  <label> Email </label>
+  <input formControlName="email" placeholder="Email" type="email" />
+  @if (form.controls.email.invalid && form.controls.email.touched) {
+  <p style="color: red">Email invalide</p>
+  }
+  <br />
+
+  <label> Mot de passe </label>
+  <input formControlName="password" placeholder="Password" type="password" />
+  @if (form.controls.password.invalid && form.controls.password.touched) {
+  <p style="color: red">Mot de passe requis</p>
+  }
+  <br />
+
+  <button type="submit" [disabled]="form.invalid">S'inscrire</button>
+</form>
+
+@if (message) {
+<p [style.color]="message.includes('Erreur') ? 'red' : 'green'">
+  {{ message }}
+</p>
+}
+
+<p>Déjà inscrit ? <a routerLink="/login">Connectez-vous</a></p>
