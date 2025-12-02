@@ -1,61 +1,55 @@
-section.account {
-  max-width: 720px;
-  margin: 40px auto;
-  padding: 32px;
-  border-radius: 24px;
-  background-color: var(--accent-color, #f4f6f5);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+.account {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
-section.account header h1 {
-  margin: 0 0 8px;
+header h1 {
+  text-align: center;
+  color: var(--main-color);
   font-size: 2rem;
-}
-
-section.account header p {
-  margin: 0;
-  color: #333;
+  margin-bottom: 30px;
 }
 
 .account-actions {
-  margin: 32px 0;
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .account-actions button {
-  flex: 1 1 30%;
-  min-width: 180px;
-  padding: 14px 18px;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  background: white;
-  font-weight: 600;
+  background-color: #e6f2e9;
+  border: none;
+  padding: 18px;
+  border-radius: 15px;
+  font-size: 1.1rem;
+  color: #1a1a1a;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: 0.2s;
+  padding: 30px 20px;
 }
 
 .account-actions button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  background-color: #d9ece1;
 }
 
-footer {
+.logout-div {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
 }
 
 .logout {
-  background-color: #c62828;
-  color: white;
+  background: none;
   border: none;
-  border-radius: 10px;
-  padding: 12px 24px;
+  text-decoration: underline;
+  color: #000;
+  font-size: 1rem;
+  margin-top: 40px;
+  margin-top: 100px;
   cursor: pointer;
-  transition: background-color 0.15s ease;
 }
 
 .logout:hover {
-  background-color: #b71c1c;
+  opacity: 0.7;
 }
