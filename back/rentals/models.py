@@ -23,3 +23,19 @@ class Car(models.Model):
     geolocalization = models.JSONField(default=dict, blank=True)
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Rental(models.Model):
+    client = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="user_rentals",
+    )
+    car = models.ForeignKey(
+        Car,
+        on_delete=models.CASCADE,
+        related_name="car_rentals",
+    )
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
