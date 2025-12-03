@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-register',
   imports: [ReactiveFormsModule, CommonModule, RouterModule],
   templateUrl: './register.html',
+  styleUrl: './register.css',
 })
 export class Register {
   private fb = inject(FormBuilder);
@@ -37,5 +38,9 @@ export class Register {
           this.message = 'Erreur : ' + err.error;
         },
       });
+  }
+
+  signupWithGoogle(): void {
+    this.message = 'Inscription Google en préparation 🚧';
   }
 }

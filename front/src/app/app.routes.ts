@@ -3,6 +3,7 @@ import { Home } from './pages/home/home';
 import { Announcement } from './pages/announcement/announcement';
 import { Login } from './pages/login/login';
 import { Register } from './pages/register/register';
+import { Account } from './pages/account/account';
 import { authGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
@@ -26,6 +27,12 @@ export const routes: Routes = [
     path: 'register',
     component: Register,
     title: 'Inscription',
+  },
+  {
+    path: 'account',
+    component: Account,
+    title: 'Mon compte',
+    canActivate: [authGuard],
   },
   {
     path: '**',

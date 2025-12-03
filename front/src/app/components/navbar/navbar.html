@@ -19,9 +19,9 @@
     <a routerLink="/" (click)="closeMenu()">Home</a>
     <a routerLink="/annonce" (click)="closeMenu()">Annonce</a>
     @if (isLoggedIn()) {
-    <a (click)="logout()">Déconnexion</a>
+      <a routerLink="/account" (click)="closeMenu()">Mon compte</a>
     } @else {
-    <a routerLink="/login">Connexion</a>
+      <a routerLink="/login">Connexion</a>
     }
   </div>
 </nav>

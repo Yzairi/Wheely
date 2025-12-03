@@ -1,0 +1,168 @@
+form {
+  background-color: var(--accent-color);
+  padding: 30px 40px;
+  border-radius: 15px;
+  width: 350px;
+  max-width: 100%;
+  margin: 20px auto;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+}
+
+form label {
+  font-size: 15px;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+form input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #333;
+  font-size: 14px;
+  margin-bottom: 10px;
+  outline: none;
+  transition: 0.2s;
+  box-sizing: border-box;
+}
+
+form input:focus {
+  border-color: #1f6155;
+  box-shadow: 0 0 4px rgba(31, 97, 85, 0.5);
+}
+
+.error {
+  color: red;
+  font-size: 0.9rem;
+  margin: -5px auto 7px;
+  text-align: center;
+}
+
+.status {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 0.95rem;
+  color: #0d3d36;
+}
+
+button {
+  background-color: var(--main-color);
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  display: block;
+  margin: 10px auto 0 auto;
+  transition: 0.2s;
+  width: 40%;
+  min-width: 120px;
+}
+
+button:hover:not(:disabled) {
+  background-color: #15473f;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.google-button {
+  margin: 15px auto 0;
+  background-color: #ffffff;
+  color: #1f1f1f;
+  border: 1px solid #d0d0d0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+.google-button::before {
+  content: '';
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background-image: url('/assets/google-logo.svg');
+  background-size: cover;
+}
+
+.google-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.auth-title {
+  text-align: center;
+  color: #0d3d36;
+  font-size: 1.8rem;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.auth-cta {
+  text-align: center;
+  font-size: 0.95rem;
+  margin-top: 15px;
+  color: #2b2b2b;
+}
+
+.auth-cta a {
+  color: #1f6155;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.auth-cta a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  form {
+    padding: 20px 25px;
+  }
+
+  form input {
+    width: 90%;
+  }
+
+  .auth-title {
+    font-size: 1.5rem;
+  }
+
+  button {
+    width: 60%;
+    font-size: 14px;
+    padding: 10px;
+    margin: 0;
+  }
+
+  .google-button {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 360px) {
+  button {
+    width: 80%;
+    font-size: 13px;
+  }
+
+  form input {
+    width: 80%;
+  }
+
+  .google-button {
+    font-size: 13px;
+  }
+}
