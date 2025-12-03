@@ -5,6 +5,7 @@ import { Login } from './pages/login/login';
 import { Register } from './pages/register/register';
 import { Account } from './pages/account/account';
 import { authGuard } from './guards/auth-guard';
+import { Car } from './pages/car/car';
 
 export const routes: Routes = [
   {
@@ -32,6 +33,12 @@ export const routes: Routes = [
     path: 'account',
     component: Account,
     title: 'Mon compte',
+    canActivate: [authGuard],
+  },
+  {
+    path: 'car',
+    component: Car,
+    title: 'Voitures',
     canActivate: [authGuard],
   },
   {
