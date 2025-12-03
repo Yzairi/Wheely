@@ -17,7 +17,7 @@ export class Login {
   private router = inject(Router);
 
   form = this.fb.group({
-    username: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
   });
 
@@ -26,7 +26,7 @@ export class Login {
   submit() {
     if (!this.form.valid) return;
 
-    this.auth.login(this.form.value as { username: string; password: string }).subscribe({
+    this.auth.login(this.form.value as { email: string; password: string }).subscribe({
       next: () => this.router.navigate(['/account']),
       error: () => (this.error = 'Identifiants incorrects'),
     });

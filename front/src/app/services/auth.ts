@@ -8,11 +8,11 @@ export class Auth {
 
   constructor(private http: HttpClient) {}
 
-  register(data: { username: string; email: string; password: string }) {
+  register(data: { email: string; password: string }) {
     return this.http.post(`${this.apiUrl}/register/`, data);
   }
 
-  login(data: { username: string; password: string }) {
+  login(data: { email: string; password: string }) {
     return this.http.post(`${this.apiUrl}/login/`, data).pipe(
       tap((res: any) => {
         this.saveTokens(res.access, res.refresh);
