@@ -37,7 +37,7 @@ export class Home {
 
   form = this.fb.group(
     {
-      city: [''],
+      city: ['', Validators.required],
       start_date: ['', Validators.required],
       end_date: ['', Validators.required],
     },
@@ -47,7 +47,7 @@ export class Home {
   searchAvailableCar() {
     return this.http
       .get(
-        `${this.apiUrl}/rentals/cars?start_date=${this.form.value.start_date}&end_date=${this.form.value.end_date}&is_available=true`
+        `${this.apiUrl}/rentals/cars?city=${this.form.value.city}&start_date=${this.form.value.start_date}&end_date=${this.form.value.end_date}&is_available=true`
       )
       .subscribe((data) => this.cars.set(data));
   }
