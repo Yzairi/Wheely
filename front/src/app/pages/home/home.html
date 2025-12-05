@@ -1,3 +1,23 @@
-<section class="home-page">
-  <p>home-page works!</p>
-</section>
+<form [formGroup]="form" (ngSubmit)="searchAvailableCar()">
+  <label>Ville</label>
+  <input type="text" formControlName="city" />
+
+  <label>Date début</label>
+  <input type="date" formControlName="start_date" type="date" />
+
+  <label>Date fin</label>
+  <input type="date" formControlName="end_date" type="date" />
+
+  <button type="submit" [disabled]="form.invalid">Rechercher</button>
+
+  @if (form.errors?.['dateRangeInvalid'] && (form.touched || form.dirty)) {
+  <p style="color: red">La date de fin doit être postérieure à la date de début.</p>
+  }
+  
+  @for (car of cars(); track car.id) {
+  <div>
+    <h3>{{ car.brand }} {{ car.model }}</h3>
+    <p>{{ car.daily_price }}€/jour</p>
+  </div>
+  }
+</form>
