@@ -1,0 +1,38 @@
+<div class="container">
+  <div class="header">
+    <button class="back-button" (click)="goBack()">← Retour</button>
+    <h1 class="title">Recherche</h1>
+  </div>
+
+  <div class="search-summary">
+    <p class="results-count">
+      {{ cars().length }} résultat{{ cars().length > 1 ? 's' : '' }} pour votre recherche :
+    </p>
+    <ul class="criteria-list">
+      <li>📍 {{ city }}</li>
+      <li>
+        📅 du {{ getFormattedStartDate() }} au {{ getFormattedEndDate() }} ({{
+          getNumberOfDays()
+        }}
+        jour{{ getNumberOfDays() > 1 ? 's' : '' }})
+      </li>
+    </ul>
+    <a class="modify-link" (click)="goToSearch()">Modifier vos critères de recherche</a>
+  </div>
+
+  <div class="cars-list">
+    @for (car of cars(); track car.id) {
+    <div class="car-card">
+      <div class="car-image">
+        <img src="/car-placeholder.jpg" alt="{{ car.brand }} {{ car.model }}" />
+      </div>
+      <div class="car-details">
+        <h3 class="car-title">{{ car.brand }} {{ car.model }}</h3>
+        <p class="car-info">{{ car.year }} - {{ car.mileage }} km</p>
+        <p class="car-info">{{ car.fuel_type }} - {{ car.gearbox }}</p>
+        <p class="car-price">{{ calculateTotalPrice(car.daily_price) }} €</p>
+      </div>
+    </div>
+    }
+  </div>
+</div>

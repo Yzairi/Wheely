@@ -1,23 +1,34 @@
-<form [formGroup]="form" (ngSubmit)="searchAvailableCar()">
-  <label>Ville</label>
-  <input type="text" formControlName="city" />
-
-  <label>Date début</label>
-  <input type="date" formControlName="start_date" type="date" />
-
-  <label>Date fin</label>
-  <input type="date" formControlName="end_date" type="date" />
-
-  <button type="submit" [disabled]="form.invalid">Rechercher</button>
-
-  @if (form.errors?.['dateRangeInvalid'] && (form.touched || form.dirty)) {
-  <p style="color: red">La date de fin doit être postérieure à la date de début.</p>
-  }
-  
-  @for (car of cars(); track car.id) {
-  <div>
-    <h3>{{ car.brand }} {{ car.model }}</h3>
-    <p>{{ car.daily_price }}€/jour</p>
+<div class="home-container">
+  <div class="logo-section">
+    <div class="logo-wrapper">
+      <img src="/logo.png" alt="Wheely" class="logo" />
+      <h1 class="site-name">Wheely</h1>
+    </div>
+    <p class="tagline">Location de voiture entre particuliers</p>
   </div>
-  }
-</form>
+
+  <div class="search-card">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-group">
+        <label>Lieu</label>
+        <input type="text" formControlName="city" />
+      </div>
+
+      <div class="form-group">
+        <label>Date début</label>
+        <input type="date" formControlName="start_date" />
+      </div>
+
+      <div class="form-group">
+        <label>Date fin</label>
+        <input type="date" formControlName="end_date" />
+      </div>
+
+      <button type="submit" [disabled]="form.invalid">Rechercher</button>
+
+      @if (form.errors?.['dateRangeInvalid'] && (form.touched || form.dirty)) {
+      <p class="error-message">La date de fin doit être postérieure à la date de début.</p>
+      }
+    </form>
+  </div>
+</div>
