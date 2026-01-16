@@ -108,4 +108,15 @@ export class Results implements OnInit {
       },
     });
   }
+
+  goToRental(carId: number) {
+    this.router.navigate(['/rental'], {
+      queryParams: {
+        id: carId,
+        city: this.city,
+        start_date: this.startDate,
+        end_date: this.endDate,
+      },
+    });
+  }
 }

@@ -7,6 +7,7 @@ import { Account } from './pages/account/account';
 import { authGuard } from './guards/auth-guard';
 import { Car } from './pages/car/car';
 import { Results } from './pages/results/results';
+import { Rental } from './pages/rental/rental';
 
 export const routes: Routes = [
   {
@@ -46,6 +47,11 @@ export const routes: Routes = [
     path: 'results',
     component: Results,
     title: 'Résultats',
+  },
+  {
+    path: 'rental',
+    component: Rental,
+    title: 'Détails de la location',
   },
   {
     path: '**',

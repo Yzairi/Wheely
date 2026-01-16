@@ -22,7 +22,7 @@
 
   <div class="cars-list">
     @for (car of cars(); track car.id) {
-    <div class="car-card">
+    <div class="car-card" (click)="goToRental(car.id)">
       <div class="car-image">
         <img src="/car-placeholder.jpg" alt="{{ car.brand }} {{ car.model }}" />
       </div>

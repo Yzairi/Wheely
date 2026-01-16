@@ -1,0 +1,48 @@
+@if (loading()) {
+<div class="container">
+  <p>Chargement...</p>
+</div>
+} @else if (car()) {
+<div class="container">
+  <div class="header">
+    <button class="back-button" (click)="goBack()">← Retour</button>
+  </div>
+
+  <h1 class="car-title">{{ car().brand }} {{ car().model }}</h1>
+
+  <div class="car-image-container">
+    <img src="/car-placeholder.jpg" [alt]="car().brand + ' ' + car().model" class="car-image" />
+  </div>
+
+  <div class="reservation-card">
+    <div class="reservation-info">
+      <p class="reservation-dates">
+        Réservation du {{ getFormattedStartDate() }} au {{ getFormattedEndDate() }}
+      </p>
+      <p class="reservation-price">{{ calculateTotalPrice(car().daily_price) }} €</p>
+    </div>
+    <button class="reserve-button" (click)="reserve()">Réserver</button>
+  </div>
+
+  <div class="characteristics-card">
+    <h2 class="characteristics-title">Caractéristiques</h2>
+    <ul class="characteristics-list">
+      <li>{{ car().year }}</li>
+      <li>{{ car().mileage }} km</li>
+      <li>{{ car().fuel_type }}</li>
+      <li>{{ car().gearbox }}</li>
+      <li>{{ car().doors }} portes</li>
+    </ul>
+    @if (car().equipments && car().equipments.length > 0) {
+    <div class="options-section">
+      <h3 class="options-title">Option</h3>
+      <ul class="options-list">
+        @for (equipment of car().equipments; track equipment) {
+        <li>{{ equipment }}</li>
+        }
+      </ul>
+    </div>
+    }
+  </div>
+</div>
+}
