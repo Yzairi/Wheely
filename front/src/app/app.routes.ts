@@ -8,6 +8,8 @@ import { authGuard } from './guards/auth-guard';
 import { Car } from './pages/car/car';
 import { Results } from './pages/results/results';
 import { Rental } from './pages/rental/rental';
+import { Confirmation } from './pages/confirmation/confirmation';
+import { MyRentals } from './pages/my-rentals/my-rentals';
 
 export const routes: Routes = [
   {
@@ -52,6 +54,17 @@ export const routes: Routes = [
     path: 'rental',
     component: Rental,
     title: 'Détails de la location',
+  },
+  {
+    path: 'confirmation',
+    component: Confirmation,
+    title: 'Confirmation de réservation',
+  },
+  {
+    path: 'my-rentals',
+    component: MyRentals,
+    title: 'Mes locations',
+    canActivate: [authGuard],
   },
   {
     path: '**',

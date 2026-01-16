@@ -16,8 +16,11 @@ class CarSerializer(serializers.ModelSerializer):
 class RentalSerializer(serializers.ModelSerializer):
     client = UserSerializer(read_only=True)
     car = CarSerializer(read_only=True)
+    car_id = serializers.PrimaryKeyRelatedField(
+        queryset=Car.objects.all(), source="car", write_only=True
+    )
 
     class Meta:
         model = Rental
         fields = "__all__"
-        read_only_fields = ("id", "client", "car", "created_at")
+        read_only_fields = ("id", "client", "created_at")

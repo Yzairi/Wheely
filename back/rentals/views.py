@@ -18,9 +18,12 @@ class CarViewSet(viewsets.ModelViewSet):
 
 
 class RentalViewSet(viewsets.ModelViewSet):
-    queryset = Rental.objects.all()
     serializer_class = RentalSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # Filtrer pour ne retourner que les locations du client connecté
+        return Rental.objects.filter(client=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(client=self.request.user)

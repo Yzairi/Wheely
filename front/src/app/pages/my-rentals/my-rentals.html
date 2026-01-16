@@ -1,0 +1,61 @@
+<section class="my-rentals">
+  <div class="header">
+    <button class="back-button" (click)="goBack()">
+      <span class="back-icon">←</span>
+      <span class="back-text">Retour</span>
+    </button>
+    <h1>Mes locations</h1>
+  </div>
+
+  @if (loading()) {
+  <div class="loading">Chargement...</div>
+  } @else {
+  <div class="rentals-content">
+    @if (activeRentals.length > 0) {
+    <section class="rentals-section">
+      <h2>Locations actives</h2>
+      <div class="rentals-list">
+        @for (rental of activeRentals; track rental.id) {
+        <div class="rental-card">
+          <img
+            [src]="'/car-placeholder.jpg'"
+            [alt]="rental.car.brand + ' ' + rental.car.model"
+            class="rental-image"
+          />
+          <div class="rental-info">
+            <p class="car-name">{{ rental.car.brand }} {{ rental.car.model }}</p>
+            <p class="rental-dates">du {{ formatDate(rental.start_date) }}</p>
+            <p class="rental-dates">au {{ formatDate(rental.end_date) }}</p>
+            <p class="rental-price">{{ calculateTotalPrice(rental) }} €</p>
+          </div>
+        </div>
+        }
+      </div>
+    </section>
+    } @if (pastRentals.length > 0) {
+    <section class="rentals-section">
+      <h2>Anciennes locations</h2>
+      <div class="rentals-list">
+        @for (rental of pastRentals; track rental.id) {
+        <div class="rental-card">
+          <img
+            [src]="'/car-placeholder.jpg'"
+            [alt]="rental.car.brand + ' ' + rental.car.model"
+            class="rental-image"
+          />
+          <div class="rental-info">
+            <p class="car-name">{{ rental.car.brand }} {{ rental.car.model }}</p>
+            <p class="rental-dates">du {{ formatDate(rental.start_date) }}</p>
+            <p class="rental-dates">au {{ formatDate(rental.end_date) }}</p>
+            <p class="rental-price">{{ calculateTotalPrice(rental) }} €</p>
+          </div>
+        </div>
+        }
+      </div>
+    </section>
+    } @if (activeRentals.length === 0 && pastRentals.length === 0) {
+    <div class="no-rentals">Aucune location pour le moment.</div>
+    }
+  </div>
+  }
+</section>

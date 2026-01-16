@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Auth } from '../../services/auth';
 
 @Component({
   selector: 'app-rental',
@@ -14,6 +15,7 @@ export class Rental implements OnInit {
   private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private auth = inject(Auth);
   
   car = signal<any>(null);
   startDate: string = '';
@@ -41,9 +43,10 @@ export class Rental implements OnInit {
     return diffDays || 1;
   }
 
-  calculateTotalPrice(dailyPrice: number): number {
+  calculateTotalPrice(dailyPrice: number | string): number {
     if (!dailyPrice) return 0;
-    return dailyPrice * this.getNumberOfDays();
+    const price = typeof dailyPrice === 'string' ? parseFloat(dailyPrice) : dailyPrice;
+    return price * this.getNumberOfDays();
   }
 
   formatDate(dateString: string): string {
@@ -64,8 +67,46 @@ export class Rental implements OnInit {
   }
 
   reserve() {
-    // À implémenter plus tard
-    console.log('Réservation à implémenter');
+    // Vérifier si l'utilisateur est connecté
+    if (!this.auth.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    // Vérifier que les données nécessaires sont présentes
+    if (!this.car() || !this.startDate || !this.endDate) {
+      console.error('Données manquantes pour la réservation');
+      return;
+    }
+
+    // Créer la réservation
+    // Convertir les dates au format ISO 8601 pour le backend
+    const startDateISO = new Date(this.startDate).toISOString();
+    const endDateISO = new Date(this.endDate).toISOString();
+
+    const rentalData = {
+      car_id: this.car().id,
+      start_date: startDateISO,
+      end_date: endDateISO,
+    };
+
+    this.http.post(`${this.apiUrl}/rentals/rentals/`, rentalData).subscribe({
+      next: (response: any) => {
+        // Rediriger vers la page de confirmation avec les données
+        this.router.navigate(['/confirmation'], {
+          queryParams: {
+            id: response.id,
+            car_id: this.car().id,
+            start_date: this.startDate,
+            end_date: this.endDate,
+          },
+        });
+      },
+      error: (error) => {
+        console.error('Erreur lors de la réservation:', error);
+        alert('Une erreur est survenue lors de la réservation. Veuillez réessayer.');
+      },
+    });
   }
 
   ngOnInit(): void {
