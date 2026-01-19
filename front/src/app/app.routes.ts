@@ -10,6 +10,7 @@ import { Results } from './pages/results/results';
 import { Rental } from './pages/rental/rental';
 import { Confirmation } from './pages/confirmation/confirmation';
 import { MyRentals } from './pages/my-rentals/my-rentals';
+import { CarFormComponent } from './components/car-form/car-form';
 
 export const routes: Routes = [
   {
@@ -64,6 +65,12 @@ export const routes: Routes = [
     path: 'my-rentals',
     component: MyRentals,
     title: 'Mes locations',
+    canActivate: [authGuard],
+  },
+  {
+    path: 'car/add',
+    component: CarFormComponent,
+    title: 'Ajouter une voiture',
     canActivate: [authGuard],
   },
   {

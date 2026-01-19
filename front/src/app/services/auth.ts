@@ -50,4 +50,17 @@ export class Auth {
   isLoggedIn(): boolean {
     return !!this.accessToken;
   }
+
+  decodeAccessToken(): { user_id?: number; [key: string]: any } | null {
+    const token = this.accessToken;
+    if (!token) return null;
+
+    try {
+      const payload = token.split('.')[1];
+      const decoded = atob(payload);
+      return JSON.parse(decoded);
+    } catch {
+      return null;
+    }
+  }
 }
