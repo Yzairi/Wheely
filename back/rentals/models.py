@@ -20,6 +20,24 @@ class Car(models.Model):
     photo_url = models.URLField(blank=True)
     is_available = models.BooleanField(default=True)
     daily_price = models.DecimalField(max_digits=8, decimal_places=2)
-    geolocalization = models.JSONField(default=dict, blank=True)
     description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    city = models.TextField(blank=True)
+    lat = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    lon = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+
+
+class Rental(models.Model):
+    client = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="user_rentals",
+    )
+    car = models.ForeignKey(
+        Car,
+        on_delete=models.CASCADE,
+        related_name="car_rentals",
+    )
+    start_date = models.DateTimeField()
+    end_date = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)

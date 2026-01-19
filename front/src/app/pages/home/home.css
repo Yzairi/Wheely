@@ -1,0 +1,125 @@
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: 2rem;
+  gap: 3rem;
+}
+
+.logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo-wrapper {
+  background-color: var(--accent-color, #e3f1e8);
+  padding: 1.5rem;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.logo {
+  max-width: 150px;
+  height: auto;
+}
+
+.site-name {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--main-color, #005c53);
+  margin: 0;
+}
+
+.tagline {
+  font-size: 1.1rem;
+  color: #333;
+  margin: 0;
+  text-align: center;
+}
+
+.search-card {
+  background-color: var(--accent-color, #e3f1e8);
+  padding: 2.5rem;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+label {
+  font-weight: 500;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+input[type='text'],
+input[type='date'] {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: white;
+  transition: border-color 0.2s;
+}
+
+input[type='text']:focus,
+input[type='date']:focus {
+  outline: none;
+  border-color: var(--main-color, #005c53);
+}
+
+button[type='submit'] {
+  background-color: var(--main-color, #005c53);
+  color: white;
+  padding: 0.875rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  margin-top: 0.5rem;
+}
+
+button[type='submit']:hover:not(:disabled) {
+  background-color: #004a42;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+button[type='submit']:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+button[type='submit']:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #d32f2f;
+  font-size: 0.9rem;
+  margin: 0;
+  margin-top: -0.5rem;
+}

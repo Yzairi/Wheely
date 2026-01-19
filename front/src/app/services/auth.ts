@@ -1,12 +1,11 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class Auth {
   private apiUrl = 'http://localhost:8000/api/auth';
-
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   register(data: { email: string; password: string }) {
     return this.http.post(`${this.apiUrl}/register/`, data);
@@ -20,8 +19,14 @@ export class Auth {
     );
   }
 
-  refresh(refresh: string) {
-    return this.http.post(`${this.apiUrl}/refresh/`, { refresh });
+  refresh() {
+    const refresh = localStorage.getItem('refresh');
+
+    return this.http.post<{ access: string }>(`${this.apiUrl}/refresh/`, { refresh }).pipe(
+      tap((tokens) => {
+        localStorage.setItem('access', tokens.access);
+      })
+    );
   }
 
   saveTokens(access: string, refresh: string) {

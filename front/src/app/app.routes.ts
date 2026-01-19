@@ -6,6 +6,10 @@ import { Register } from './pages/register/register';
 import { Account } from './pages/account/account';
 import { authGuard } from './guards/auth-guard';
 import { Car } from './pages/car/car';
+import { Results } from './pages/results/results';
+import { Rental } from './pages/rental/rental';
+import { Confirmation } from './pages/confirmation/confirmation';
+import { MyRentals } from './pages/my-rentals/my-rentals';
 import { CarFormComponent } from './components/car-form/car-form';
 
 export const routes: Routes = [
@@ -40,6 +44,27 @@ export const routes: Routes = [
     path: 'car',
     component: Car,
     title: 'Voitures',
+    canActivate: [authGuard],
+  },
+  {
+    path: 'results',
+    component: Results,
+    title: 'Résultats',
+  },
+  {
+    path: 'rental',
+    component: Rental,
+    title: 'Détails de la location',
+  },
+  {
+    path: 'confirmation',
+    component: Confirmation,
+    title: 'Confirmation de réservation',
+  },
+  {
+    path: 'my-rentals',
+    component: MyRentals,
+    title: 'Mes locations',
     canActivate: [authGuard],
   },
   {

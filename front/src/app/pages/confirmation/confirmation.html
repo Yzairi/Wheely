@@ -1,0 +1,30 @@
+@if (loading()) {
+<div class="container">
+  <p>Chargement...</p>
+</div>
+} @else if (car() && rentalData()) {
+<div class="container">
+  <h1 class="title">Réservation validée</h1>
+
+  <div class="car-image-container">
+    <img
+      src="/car-placeholder.jpg"
+      [alt]="car().brand + ' ' + car().model"
+      class="car-image"
+    />
+  </div>
+
+  <div class="reservation-details">
+    <p class="detail-label">Vous avez réservé :</p>
+    <p class="detail-value">{{ car().brand }} {{ car().model }}</p>
+
+    <p class="detail-label">Pour la période :</p>
+    <p class="detail-value">{{ getFormattedStartDate() }} - {{ getFormattedEndDate() }}</p>
+
+    <p class="detail-label">Prix total :</p>
+    <p class="detail-value price">{{ calculateTotalPrice() }}€</p>
+  </div>
+
+  <button class="ok-button" (click)="goHome()">Ok</button>
+</div>
+}
