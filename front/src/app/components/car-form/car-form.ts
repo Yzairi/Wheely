@@ -20,6 +20,8 @@ export class CarFormComponent implements OnInit {
   protected readonly currentStep = signal(0);
   protected readonly submitting = signal(false);
   protected readonly editingCar = signal<any | null>(null);
+  protected readonly photoPreview = signal<string | null>(null);
+  protected readonly photoName = signal<string | null>(null);
 
   protected readonly infoForm = this.fb.group({
     brand: [''],
@@ -109,6 +111,7 @@ export class CarFormComponent implements OnInit {
           .map((item) => item.trim())
           .filter((item) => !!item) ?? [],
       is_available: this.editingCar()?.is_available ?? true,
+      photo_url: this.photoPreview() ?? this.detailsForm.value.photo_url,
     };
 
     this.submitting.set(true);
@@ -149,6 +152,8 @@ export class CarFormComponent implements OnInit {
         : car.equipments ?? 'GPS, Airbags',
       city: car.geolocalization?.city ?? '',
     });
+    this.photoPreview.set(car.photo_url ?? null);
+    this.photoName.set(car.photo_url ? 'Image existante' : null);
   }
 
   private resetForms(): void {
@@ -171,5 +176,38 @@ export class CarFormComponent implements OnInit {
       equipments: 'GPS, Airbags',
       city: '',
     });
+    this.photoPreview.set(null);
+    this.photoName.set(null);
+  }
+
+  protected handleFileInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) {
+      this.readFile(file);
+    }
+  }
+
+  protected allowDrop(event: DragEvent): void {
+    event.preventDefault();
+  }
+
+  protected handleDrop(event: DragEvent): void {
+    event.preventDefault();
+    const file = event.dataTransfer?.files?.[0];
+    if (file) {
+      this.readFile(file);
+    }
+  }
+
+  private readFile(file: File): void {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      this.photoPreview.set(result);
+      this.photoName.set(file.name);
+      this.detailsForm.patchValue({ photo_url: result });
+    };
+    reader.readAsDataURL(file);
   }
 }

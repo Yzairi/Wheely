@@ -67,10 +67,16 @@
     </form>
   } @else {
     <form [formGroup]="detailsForm" (ngSubmit)="submit()">
-      <label>
-        Photo (URL)
-        <input formControlName="photo_url" placeholder="https://..." />
-      </label>
+      <div
+        class="photo-dropzone"
+        (dragover)="allowDrop($event)"
+        (drop)="handleDrop($event)"
+      >
+        <p *ngIf="!photoPreview()">Glissez une photo ou cliquez pour choisir</p>
+        <img *ngIf="photoPreview()" [src]="photoPreview()" alt="Prévisualisation" />
+        <span *ngIf="photoName()">{{ photoName() }}</span>
+        <input type="file" accept="image/*" (change)="handleFileInput($event)" />
+      </div>
       <label>
         Description
         <textarea rows="3" formControlName="description"></textarea>
