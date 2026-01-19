@@ -1,6 +1,6 @@
 <section class="car-form">
   <div class="form-header">
-    <h2>Ajouter une voiture</h2>
+    <h2>{{ editingCar() ? 'Modifier une voiture' : 'Ajouter une voiture' }}</h2>
     <a routerLink="/car">Retour à mes voitures</a>
   </div>
 

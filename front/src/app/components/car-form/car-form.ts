@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CarService } from '../../services/car_services/car';
 
 @Component({
@@ -11,13 +11,15 @@ import { CarService } from '../../services/car_services/car';
   templateUrl: './car-form.html',
   styleUrls: ['./car-form.css'],
 })
-export class CarFormComponent {
+export class CarFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly carService = inject(CarService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly currentStep = signal(0);
   protected readonly submitting = signal(false);
+  protected readonly editingCar = signal<any | null>(null);
 
   protected readonly infoForm = this.fb.group({
     brand: [''],
@@ -40,6 +42,22 @@ export class CarFormComponent {
     equipments: ['GPS, Airbags'],
     city: [''],
   });
+
+  ngOnInit(): void {
+    this.route.queryParamMap.subscribe((params) => {
+      const editId = params.get('edit');
+      if (editId) {
+        this.carService.getCar(+editId).subscribe((car) => {
+          this.editingCar.set(car);
+          this.populateForms(car);
+        });
+      } else {
+        this.editingCar.set(null);
+        this.resetForms();
+        this.currentStep.set(0);
+      }
+    });
+  }
 
   protected goNext(): void {
     const step = this.currentStep();
@@ -90,17 +108,68 @@ export class CarFormComponent {
           ?.split(',')
           .map((item) => item.trim())
           .filter((item) => !!item) ?? [],
-      is_available: true,
+      is_available: this.editingCar()?.is_available ?? true,
     };
 
     this.submitting.set(true);
-    this.carService.createCar(payload).subscribe({
+    const request$ = this.editingCar()
+      ? this.carService.updateCar(this.editingCar()!.id, payload)
+      : this.carService.createCar(payload);
+
+    request$.subscribe({
       next: () => {
         this.router.navigate(['/car']);
       },
       error: () => {
         this.submitting.set(false);
       },
+    });
+  }
+  private populateForms(car: any): void {
+    this.infoForm.patchValue({
+      brand: car.brand ?? '',
+      model: car.model ?? '',
+      year: car.year ?? new Date().getFullYear(),
+      mileage: car.mileage ?? 0,
+    });
+
+    this.specForm.patchValue({
+      fuel_type: car.fuel_type ?? '',
+      gearbox: car.gearbox ?? '',
+      doors: car.doors ?? 5,
+      seats: car.seats ?? 5,
+      daily_price: car.daily_price ?? 0,
+    });
+
+    this.detailsForm.patchValue({
+      photo_url: car.photo_url ?? '',
+      description: car.description ?? '',
+      equipments: Array.isArray(car.equipments)
+        ? car.equipments.join(', ')
+        : car.equipments ?? 'GPS, Airbags',
+      city: car.geolocalization?.city ?? '',
+    });
+  }
+
+  private resetForms(): void {
+    this.infoForm.reset({
+      brand: '',
+      model: '',
+      year: new Date().getFullYear(),
+      mileage: 0,
+    });
+    this.specForm.reset({
+      fuel_type: '',
+      gearbox: '',
+      doors: 5,
+      seats: 5,
+      daily_price: 0,
+    });
+    this.detailsForm.reset({
+      photo_url: '',
+      description: '',
+      equipments: 'GPS, Airbags',
+      city: '',
     });
   }
 }
