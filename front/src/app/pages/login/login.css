@@ -88,16 +88,6 @@ button:disabled {
   border-radius: 10px;
   box-sizing: border-box;
 }
-
-.google-button::before {
-  content: '';
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  background-image: url('/assets/google-logo.svg');
-  background-size: cover;
-}
-
 .google-button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
