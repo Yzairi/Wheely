@@ -6,6 +6,7 @@ import { Register } from './pages/register/register';
 import { Account } from './pages/account/account';
 import { authGuard } from './guards/auth-guard';
 import { Car } from './pages/car/car';
+import { CarFormComponent } from './components/car-form/car-form';
 
 export const routes: Routes = [
   {
@@ -39,6 +40,12 @@ export const routes: Routes = [
     path: 'car',
     component: Car,
     title: 'Voitures',
+    canActivate: [authGuard],
+  },
+  {
+    path: 'car/add',
+    component: CarFormComponent,
+    title: 'Ajouter une voiture',
     canActivate: [authGuard],
   },
   {

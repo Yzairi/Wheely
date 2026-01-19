@@ -17,4 +17,8 @@ export class CarService {
       tap((cars) => this.cars.set(cars))
     );
   }
+
+  createCar(payload: unknown) {
+    return this.http.post(this.apiUrl, payload);
+  }
 }

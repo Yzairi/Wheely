@@ -1,0 +1,92 @@
+<section class="car-form">
+  <div class="form-header">
+    <h2>Ajouter une voiture</h2>
+    <a routerLink="/car">Retour à mes voitures</a>
+  </div>
+
+  <div class="stepper">
+    <button type="button" [class.active]="currentStep() === 0" (click)="goToStep(0)">
+      Infos générales
+    </button>
+    <button type="button" [class.active]="currentStep() === 1" (click)="goToStep(1)">
+      Spécifications
+    </button>
+    <button type="button" [class.active]="currentStep() === 2" (click)="goToStep(2)">
+      Détails
+    </button>
+  </div>
+
+  @if (currentStep() === 0) {
+    <form [formGroup]="infoForm" (ngSubmit)="goNext()">
+      <label>
+        Marque
+        <input formControlName="brand" placeholder="Peugeot" />
+      </label>
+      <label>
+        Modèle
+        <input formControlName="model" placeholder="208" />
+      </label>
+      <label>
+        Année
+        <input type="number" formControlName="year" />
+      </label>
+      <label>
+        Kilométrage
+        <input type="number" formControlName="mileage" />
+      </label>
+      <div class="actions">
+        <button type="submit">Suivant</button>
+      </div>
+    </form>
+  } @else if (currentStep() === 1) {
+    <form [formGroup]="specForm" (ngSubmit)="goNext()">
+      <label>
+        Carburant
+        <input formControlName="fuel_type" placeholder="Essence" />
+      </label>
+      <label>
+        Boîte de vitesses
+        <input formControlName="gearbox" placeholder="Automatique" />
+      </label>
+      <label>
+        Portes
+        <input type="number" formControlName="doors" />
+      </label>
+      <label>
+        Sièges
+        <input type="number" formControlName="seats" />
+      </label>
+      <label>
+        Prix journalier (€)
+        <input type="number" formControlName="daily_price" />
+      </label>
+      <div class="actions">
+        <button type="button" class="secondary" (click)="goPrevious()">Retour</button>
+        <button type="submit">Suivant</button>
+      </div>
+    </form>
+  } @else {
+    <form [formGroup]="detailsForm" (ngSubmit)="submit()">
+      <label>
+        Photo (URL)
+        <input formControlName="photo_url" placeholder="https://..." />
+      </label>
+      <label>
+        Description
+        <textarea rows="3" formControlName="description"></textarea>
+      </label>
+      <label>
+        Équipements (séparés par des virgules)
+        <input formControlName="equipments" placeholder="GPS, Climatisation, Radar" />
+      </label>
+      <label>
+        Ville
+        <input formControlName="city" placeholder="Paris" />
+      </label>
+      <div class="actions">
+        <button type="button" class="secondary" (click)="goPrevious()">Retour</button>
+        <button type="submit" [disabled]="submitting()">Confirmer</button>
+      </div>
+    </form>
+  }
+</section>
