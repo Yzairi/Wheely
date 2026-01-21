@@ -19,6 +19,18 @@ export class Auth {
     );
   }
 
+  googleLogin(idToken: string) {
+    return this.http.post(`${this.apiUrl}/google/`, { id_token: idToken }).pipe(
+      tap((res: any) => {
+        this.saveTokens(res.access, res.refresh);
+      })
+    );
+  }
+
+  googleRedirectUrl(): string {
+    return `${this.apiUrl}/google/login/`;
+  }
+
   refresh() {
     const refresh = localStorage.getItem('refresh');
 
