@@ -11,6 +11,7 @@ import { Rental } from './pages/rental/rental';
 import { Confirmation } from './pages/confirmation/confirmation';
 import { MyRentals } from './pages/my-rentals/my-rentals';
 import { CarFormComponent } from './components/car-form/car-form';
+import { MyInfo } from './pages/my-info/my-info';
 
 export const routes: Routes = [
   {
@@ -65,6 +66,12 @@ export const routes: Routes = [
     path: 'my-rentals',
     component: MyRentals,
     title: 'Mes locations',
+    canActivate: [authGuard],
+  },
+  {
+    path: 'my-info',
+    component: MyInfo,
+    title: 'Mes infos',
     canActivate: [authGuard],
   },
   {

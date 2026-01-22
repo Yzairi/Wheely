@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+
 try:
     from google.auth.transport import requests as google_requests
     from google.oauth2 import id_token
@@ -20,7 +21,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import RegisterSerializer
+from .serializers import RegisterSerializer, UserSerializer
 
 
 def _get_or_create_google_user(idinfo):
@@ -56,7 +57,8 @@ class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        return Response({"user": request.user.email})
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
 
 
 class GoogleAuthView(APIView):
@@ -184,9 +186,8 @@ class GoogleRedirectCallbackView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        redirect_uri = (
-            settings.GOOGLE_REDIRECT_URI
-            or request.build_absolute_uri(reverse("google-callback"))
+        redirect_uri = settings.GOOGLE_REDIRECT_URI or request.build_absolute_uri(
+            reverse("google-callback")
         )
 
         token_payload = {
@@ -219,7 +220,9 @@ class GoogleRedirectCallbackView(APIView):
                 {
                     "detail": "Failed to exchange code with Google.",
                     "google_error": token_response.get("error", ""),
-                    "google_error_description": token_response.get("error_description", ""),
+                    "google_error_description": token_response.get(
+                        "error_description", ""
+                    ),
                     "status_code": response.status_code,
                 },
                 status=status.HTTP_400_BAD_REQUEST,
