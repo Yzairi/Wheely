@@ -1,0 +1,122 @@
+.car-rentals {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-bottom: 16px;
+  cursor: pointer;
+  font-size: 16px;
+  color: inherit;
+}
+
+.back-icon {
+  font-size: 20px;
+}
+
+.back-text {
+  text-decoration: underline;
+}
+
+.header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.rentals-content {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.rentals-section h2 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+}
+
+.rentals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rental-card {
+  background-color: #e8f5e9;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.rental-dates {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #333;
+}
+
+.rental-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.client-name {
+  font-size: 15px;
+}
+
+.rental-price {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.loading,
+.no-rentals {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+@media (min-width: 768px) {
+  .car-rentals {
+    max-width: 720px;
+    padding: 32px 24px;
+  }
+
+  .header h1 {
+    font-size: 28px;
+  }
+
+  .rentals-section h2 {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  .rental-card {
+    padding: 18px 20px;
+  }
+
+  .rental-dates {
+    font-size: 15px;
+  }
+
+  .client-name {
+    font-size: 16px;
+  }
+
+  .rental-price {
+    font-size: 17px;
+  }
+}

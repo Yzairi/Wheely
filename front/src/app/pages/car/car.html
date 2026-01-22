@@ -12,6 +12,12 @@
         <div class="card-actions">
           <button
             type="button"
+            [routerLink]="['/car-rentals', car.id]"
+          >
+            Réservations
+          </button>
+          <button
+            type="button"
             [routerLink]="['/car/add']"
             [queryParams]="{ edit: car.id }"
           >

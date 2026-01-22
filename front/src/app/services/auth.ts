@@ -75,4 +75,17 @@ export class Auth {
       return null;
     }
   }
+
+  getProfile() {
+    return this.http.get<{
+      id: number;
+      username: string;
+      email: string;
+      phone_number: string | null;
+      first_name: string;
+      last_name: string;
+      avatar_url: string;
+      email_verified: boolean;
+    }>(`${this.apiUrl}/profile/`);
+  }
 }

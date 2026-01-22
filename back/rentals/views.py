@@ -37,3 +37,20 @@ class RentalViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(client=self.request.user)
+
+    @action(
+        detail=False,
+        methods=["get"],
+        url_path="by-car/(?P<car_id>[^/.]+)",
+    )
+    def by_car(self, request, car_id=None):
+        """Rentals pour une voiture donnée (réservé au propriétaire de la voiture)."""
+        car = Car.objects.filter(id=car_id, owner=request.user).first()
+        if not car:
+            return Response({"detail": "Voiture introuvable."}, status=404)
+        rentals = Rental.objects.filter(car=car).select_related("client", "car").order_by("-start_date")
+        serializer = self.get_serializer(rentals, many=True)
+        return Response({
+            "car": {"id": car.id, "brand": car.brand, "model": car.model},
+            "rentals": serializer.data,
+        })
