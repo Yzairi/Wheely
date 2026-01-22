@@ -1,0 +1,53 @@
+<section class="car-rentals">
+  <div class="header">
+    <button class="back-button" (click)="goBack()">
+      <span class="back-icon">←</span>
+      <span class="back-text">Retour</span>
+    </button>
+    <h1>{{ carTitle }}</h1>
+  </div>
+
+  @if (loading()) {
+  <div class="loading">Chargement...</div>
+  } @else if (notFound()) {
+  <div class="no-rentals">Voiture introuvable.</div>
+  } @else {
+  <div class="rentals-content">
+    @if (activeRentals.length > 0) {
+    <section class="rentals-section">
+      <h2>Réservations actives</h2>
+      <div class="rentals-list">
+        @for (r of activeRentals; track r.id) {
+        <div class="rental-card">
+          <p class="rental-dates">du {{ formatDate(r.start_date) }} au {{ formatDate(r.end_date) }}</p>
+          <div class="rental-row">
+            <span class="client-name">{{ clientName(r) }}</span>
+            <span class="rental-price">{{ totalPrice(r) }} €</span>
+          </div>
+        </div>
+        }
+      </div>
+    </section>
+    }
+    @if (pastRentals.length > 0) {
+    <section class="rentals-section">
+      <h2>Réservations passées</h2>
+      <div class="rentals-list">
+        @for (r of pastRentals; track r.id) {
+        <div class="rental-card">
+          <p class="rental-dates">du {{ formatDate(r.start_date) }} au {{ formatDate(r.end_date) }}</p>
+          <div class="rental-row">
+            <span class="client-name">{{ clientName(r) }}</span>
+            <span class="rental-price">{{ totalPrice(r) }} €</span>
+          </div>
+        </div>
+        }
+      </div>
+    </section>
+    }
+    @if (activeRentals.length === 0 && pastRentals.length === 0) {
+    <div class="no-rentals">Aucune réservation pour cette voiture.</div>
+    }
+  </div>
+  }
+</section>
