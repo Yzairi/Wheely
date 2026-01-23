@@ -17,7 +17,7 @@ class Car(models.Model):
     seats = models.PositiveSmallIntegerField()
     equipments = models.JSONField(default=list, blank=True)
     mileage = models.PositiveIntegerField()
-    photo_url = models.URLField(blank=True)
+    photo_url = models.ImageField(upload_to="cars/", blank=True, null=True)
     is_available = models.BooleanField(default=True)
     daily_price = models.DecimalField(max_digits=8, decimal_places=2)
     description = models.TextField(blank=True)
