@@ -19,20 +19,32 @@
   @if (currentStep() === 0) {
     <form [formGroup]="infoForm" (ngSubmit)="goNext()">
       <label>
-        Marque
-        <input formControlName="brand" placeholder="Peugeot" />
+        <span class="label-line">Marque <abbr class="req" title="obligatoire">*</abbr></span>
+        <input formControlName="brand" placeholder="Peugeot" autocomplete="organization" />
+        @if (infoForm.controls.brand.invalid && infoForm.controls.brand.touched) {
+          <span class="field-error">La marque est obligatoire.</span>
+        }
       </label>
       <label>
-        Modèle
+        <span class="label-line">Modèle <abbr class="req" title="obligatoire">*</abbr></span>
         <input formControlName="model" placeholder="208" />
+        @if (infoForm.controls.model.invalid && infoForm.controls.model.touched) {
+          <span class="field-error">Le modèle est obligatoire.</span>
+        }
       </label>
       <label>
-        Année
-        <input type="number" formControlName="year" />
+        <span class="label-line">Année <abbr class="req" title="obligatoire">*</abbr></span>
+        <input type="number" formControlName="year" min="1900" [attr.max]="maxCarYear" />
+        @if (infoForm.controls.year.invalid && infoForm.controls.year.touched) {
+          <span class="field-error">Indiquez une année valide.</span>
+        }
       </label>
       <label>
-        Kilométrage
-        <input type="number" formControlName="mileage" />
+        <span class="label-line">Kilométrage <abbr class="req" title="obligatoire">*</abbr></span>
+        <input type="number" formControlName="mileage" min="0" />
+        @if (infoForm.controls.mileage.invalid && infoForm.controls.mileage.touched) {
+          <span class="field-error">Le kilométrage est obligatoire.</span>
+        }
       </label>
       <div class="actions">
         <button type="submit">Suivant</button>
@@ -41,7 +53,7 @@
   } @else if (currentStep() === 1) {
     <form [formGroup]="specForm" (ngSubmit)="goNext()">
       <label>
-        Carburant
+        <span class="label-line">Carburant <abbr class="req" title="obligatoire">*</abbr></span>
         <select formControlName="fuel_type">
           <option value="" disabled>Choisir un carburant</option>
           <option value="Essence">Essence</option>
@@ -50,26 +62,45 @@
           <option value="Electrique">Electrique</option>
           <option value="GPL">GPL</option>
         </select>
+        @if (specForm.controls.fuel_type.invalid && specForm.controls.fuel_type.touched) {
+          <span class="field-error">Choisissez un type de carburant.</span>
+        }
       </label>
       <label>
-        Boîte de vitesses
+        <span class="label-line"
+          >Boîte de vitesses <abbr class="req" title="obligatoire">*</abbr></span
+        >
         <select formControlName="gearbox">
           <option value="" disabled>Choisir une boîte</option>
           <option value="Manuelle">Manuelle</option>
           <option value="Automatique">Automatique</option>
         </select>
+        @if (specForm.controls.gearbox.invalid && specForm.controls.gearbox.touched) {
+          <span class="field-error">Choisissez un type de boîte.</span>
+        }
       </label>
       <label>
-        Portes
-        <input type="number" formControlName="doors" />
+        <span class="label-line">Portes <abbr class="req" title="obligatoire">*</abbr></span>
+        <input type="number" formControlName="doors" min="1" max="20" />
+        @if (specForm.controls.doors.invalid && specForm.controls.doors.touched) {
+          <span class="field-error">Indiquez un nombre de portes (1 à 20).</span>
+        }
       </label>
       <label>
-        Sièges
-        <input type="number" formControlName="seats" />
+        <span class="label-line">Sièges <abbr class="req" title="obligatoire">*</abbr></span>
+        <input type="number" formControlName="seats" min="1" max="20" />
+        @if (specForm.controls.seats.invalid && specForm.controls.seats.touched) {
+          <span class="field-error">Indiquez un nombre de sièges (1 à 20).</span>
+        }
       </label>
       <label>
-        Prix journalier (€)
-        <input type="number" formControlName="daily_price" />
+        <span class="label-line"
+          >Prix journalier (€) <abbr class="req" title="obligatoire">*</abbr></span
+        >
+        <input type="number" formControlName="daily_price" min="0.01" step="0.01" />
+        @if (specForm.controls.daily_price.invalid && specForm.controls.daily_price.touched) {
+          <span class="field-error">Indiquez un prix journalier supérieur à 0.</span>
+        }
       </label>
       <div class="actions">
         <button type="button" class="secondary" (click)="goPrevious()">Retour</button>
@@ -78,27 +109,47 @@
     </form>
   } @else {
     <form [formGroup]="detailsForm" (ngSubmit)="submit()">
+      <span class="label-line">Photo <span class="optional">(facultatif)</span></span>
       <div class="photo-dropzone" (dragover)="allowDrop($event)" (drop)="handleDrop($event)">
-        <p *ngIf="!photoPreview()">Glissez une photo ou cliquez pour choisir</p>
-        <img *ngIf="photoPreview()" [src]="photoPreview()" alt="Prévisualisation" />
-        <span *ngIf="photoName()">{{ photoName() }}</span>
+        @if (!photoPreview()) {
+          <p>Glissez une photo ou cliquez pour choisir</p>
+        }
+        @if (photoPreview()) {
+          <img [src]="photoPreview()" alt="Prévisualisation" />
+        }
+        @if (photoName()) {
+          <span>{{ photoName() }}</span>
+        }
         <input type="file" accept="image/*" (change)="handleFileInput($event)" />
       </div>
       <label>
-        Description
+        <span class="label-line">Description <span class="optional">(facultatif)</span></span>
         <textarea rows="3" formControlName="description"></textarea>
       </label>
       <label>
-        Équipements (séparés par des virgules)
+        <span class="label-line"
+          >Équipements <span class="optional">(facultatif, séparés par des virgules)</span></span
+        >
         <input formControlName="equipments" placeholder="GPS, Climatisation, Radar" />
       </label>
       <label>
-        Ville
-        <input formControlName="city" placeholder="Paris" />
-      </label>
-      <label>
-        Adresse
-        <input type="text" id="address" placeholder="Adresse" />
+        <span class="label-line"
+          >Adresse <abbr class="req" title="obligatoire">*</abbr></span
+        >
+        <input
+          type="text"
+          id="address"
+          placeholder="Tapez une adresse, puis choisissez une suggestion"
+          (input)="onAddressInput($event)"
+          autocomplete="street-address"
+        />
+        <p class="address-hint">
+          La position GPS est enregistrée uniquement si vous sélectionnez une adresse dans la liste
+          proposée.
+        </p>
+        @if (addressSubmitError()) {
+          <span class="field-error">{{ addressSubmitError() }}</span>
+        }
       </label>
       <div class="actions">
         <button type="button" class="secondary" (click)="goPrevious()">Retour</button>

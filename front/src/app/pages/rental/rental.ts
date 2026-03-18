@@ -1,7 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- API Google Maps chargée dynamiquement */
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, OnInit, signal } from '@angular/core';
+
+type GMaps = { Map: new (el: HTMLElement, opts: object) => any; Marker: new (opts: object) => any };
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Auth } from '../../services/auth';
+import { GoogleMapsLoaderService } from '../../services/google-maps-loader-service';
 
 @Component({
   selector: 'app-rental',
@@ -10,12 +14,15 @@ import { Auth } from '../../services/auth';
   templateUrl: './rental.html',
   styleUrl: './rental.css',
 })
-export class Rental implements OnInit {
+export class Rental implements OnInit, OnDestroy {
   private apiUrl = 'http://localhost:8000/api';
+  private backendUrl = 'http://localhost:8000';
   private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private auth = inject(Auth);
+  private mapsLoader = inject(GoogleMapsLoaderService);
+  private mapCarId: number | null = null;
   
   car = signal<any>(null);
   startDate: string = '';
@@ -23,9 +30,13 @@ export class Rental implements OnInit {
   loading = signal<boolean>(true);
 
   goBack() {
+    const q = this.route.snapshot.queryParams;
     this.router.navigate(['/results'], {
       queryParams: {
-        city: this.route.snapshot.queryParams['city'],
+        address: q['address'] ?? '',
+        lat: q['lat'] ?? '',
+        lng: q['lng'] ?? '',
+        radius_km: q['radius_km'] ?? '10',
         start_date: this.startDate,
         end_date: this.endDate,
       },
@@ -64,6 +75,44 @@ export class Rental implements OnInit {
 
   getFormattedEndDate(): string {
     return this.formatDate(this.endDate);
+  }
+
+  /** Position pour la carte (API latitude/longitude ou GeoJSON éventuel). */
+  getCarLatLng(car: Record<string, unknown> | null): { lat: number; lng: number } | null {
+    if (!car) return null;
+    const lat = car['latitude'];
+    const lng = car['longitude'];
+    if (typeof lat === 'number' && typeof lng === 'number' && !Number.isNaN(lat) && !Number.isNaN(lng)) {
+      return { lat, lng };
+    }
+    if (typeof lat === 'string' && typeof lng === 'string') {
+      const la = parseFloat(lat);
+      const ln = parseFloat(lng);
+      if (!Number.isNaN(la) && !Number.isNaN(ln)) return { lat: la, lng: ln };
+    }
+    const loc = car['location'] as { type?: string; coordinates?: number[] } | undefined;
+    if (loc?.type === 'Point' && Array.isArray(loc.coordinates) && loc.coordinates.length >= 2) {
+      return { lat: loc.coordinates[1], lng: loc.coordinates[0] };
+    }
+    return null;
+  }
+
+  hasCarLocation(car: Record<string, unknown> | null): boolean {
+    return this.getCarLatLng(car) !== null;
+  }
+
+  getCarPhoto(car: any): string {
+    const photo = car?.photo_url;
+    if (!photo) {
+      return '/car-placeholder.jpg';
+    }
+    if (photo.startsWith('http://') || photo.startsWith('https://')) {
+      return photo;
+    }
+    if (photo.startsWith('/')) {
+      return `${this.backendUrl}${photo}`;
+    }
+    return `${this.backendUrl}/${photo}`;
   }
 
   reserve() {
@@ -120,15 +169,62 @@ export class Rental implements OnInit {
         return;
       }
 
+      this.mapCarId = null;
+
       this.http.get(`${this.apiUrl}/rentals/cars/${carId}/`).subscribe({
         next: (data) => {
           this.car.set(data);
           this.loading.set(false);
+          const pos = this.getCarLatLng(data as Record<string, unknown>);
+          if (pos) {
+            setTimeout(() => this.initRentalMap(data as { id: number; brand?: string; model?: string }, pos, 0), 0);
+          } else {
+            this.mapCarId = null;
+          }
         },
         error: () => {
           this.router.navigate(['/results']);
         },
       });
     });
+  }
+
+  private initRentalMap(
+    car: { id: number; brand?: string; model?: string },
+    pos: { lat: number; lng: number },
+    attempt = 0,
+  ): void {
+    const el = document.getElementById('rental-map');
+    if (!el) {
+      if (attempt < 30) {
+        setTimeout(() => this.initRentalMap(car, pos, attempt + 1), 50);
+      }
+      return;
+    }
+    if (this.mapCarId === car.id) return;
+
+    this.mapsLoader.load().then(() => {
+      const g = (window as unknown as { google?: { maps: GMaps } }).google;
+      if (!g?.maps) return;
+      el.innerHTML = '';
+      const title = [car.brand, car.model].filter(Boolean).join(' ') || 'Véhicule';
+      const map = new g.maps.Map(el, {
+        center: pos,
+        zoom: 15,
+        mapTypeControl: true,
+        streetViewControl: true,
+        fullscreenControl: true,
+      });
+      new g.maps.Marker({
+        position: pos,
+        map,
+        title,
+      });
+      this.mapCarId = car.id;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.mapCarId = null;
   }
 }

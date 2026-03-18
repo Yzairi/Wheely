@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Injector, OnInit, afterNextRender, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CarService } from '../../services/car_services/car';
 import { GoogleMapsLoaderService } from '../../services/google-maps-loader-service';
@@ -28,28 +28,40 @@ export class CarFormComponent implements OnInit {
   protected readonly photoPreview = signal<string | null>(null);
   protected readonly photoName = signal<string | null>(null);
   protected readonly photoFile = signal<File | null>(null);
-  /** Position si l’utilisateur choisit une adresse dans l’autocomplete (optionnel). */
+  /** Position après choix dans l’autocomplete (ou voiture déjà géolocalisée à l’édition). */
   protected readonly selectedGeolocation = signal<{ lat: number; lng: number } | null>(null);
+  /** Adresse associée au dernier point géolocalisé (saisie modifiée → géoloc invalidée). */
+  private readonly committedAddressForGeoloc = signal<string | null>(null);
+  protected readonly addressSubmitError = signal<string | null>(null);
 
+  protected readonly maxCarYear = new Date().getFullYear() + 1;
+
+  /** Champs alignés sur le modèle API (obligatoires côté serveur). */
   protected readonly infoForm = this.fb.group({
-    brand: [''],
-    model: [''],
-    year: [new Date().getFullYear()],
-    mileage: [0],
+    brand: ['', [Validators.required, Validators.maxLength(100)]],
+    model: ['', [Validators.required, Validators.maxLength(100)]],
+    year: [
+      new Date().getFullYear(),
+      [
+        Validators.required,
+        Validators.min(1900),
+        Validators.max(this.maxCarYear),
+      ],
+    ],
+    mileage: [0, [Validators.required, Validators.min(0)]],
   });
 
   protected readonly specForm = this.fb.group({
-    fuel_type: [''],
-    gearbox: [''],
-    doors: [5],
-    seats: [5],
-    daily_price: [0],
+    fuel_type: ['', Validators.required],
+    gearbox: ['', Validators.required],
+    doors: [5, [Validators.required, Validators.min(1), Validators.max(20)]],
+    seats: [5, [Validators.required, Validators.min(1), Validators.max(20)]],
+    daily_price: [0, [Validators.required, Validators.min(0.01)]],
   });
 
   protected readonly detailsForm = this.fb.group({
     description: [''],
     equipments: ['GPS, Airbags'],
-    city: [''],
   });
 
   ngOnInit(): void {
@@ -90,6 +102,10 @@ export class CarFormComponent implements OnInit {
           const lat = place.geometry.location.lat();
           const lng = place.geometry.location.lng();
           this.selectedGeolocation.set({ lat, lng });
+          const label =
+            (place.formatted_address as string | undefined)?.trim() || input.value.trim();
+          this.committedAddressForGeoloc.set(label);
+          this.addressSubmitError.set(null);
         });
       },
       { injector: this.injector },
@@ -133,13 +149,42 @@ export class CarFormComponent implements OnInit {
     }
   }
 
+  protected onAddressInput(event: Event): void {
+    const el = event.target as HTMLInputElement;
+    const v = el.value.trim();
+    const committed = this.committedAddressForGeoloc();
+    if (committed !== null && v !== committed) {
+      this.selectedGeolocation.set(null);
+    }
+  }
+
   protected submit(): void {
-    if (this.detailsForm.invalid) {
-      this.detailsForm.markAllAsTouched();
+    this.infoForm.markAllAsTouched();
+    this.specForm.markAllAsTouched();
+    this.detailsForm.markAllAsTouched();
+    if (this.infoForm.invalid || this.specForm.invalid || this.detailsForm.invalid) {
+      if (this.infoForm.invalid) {
+        this.currentStep.set(0);
+      } else if (this.specForm.invalid) {
+        this.currentStep.set(1);
+      }
       return;
     }
 
+    const addressInput = document.getElementById('address') as HTMLInputElement | null;
+    const address = addressInput?.value?.trim() ?? '';
+    this.addressSubmitError.set(null);
+    if (!address) {
+      this.addressSubmitError.set("L'adresse est obligatoire.");
+      return;
+    }
     const geo = this.selectedGeolocation();
+    if (!geo) {
+      this.addressSubmitError.set(
+        'Sélectionnez une adresse dans les suggestions Google pour enregistrer la position.',
+      );
+      return;
+    }
 
     const payload = {
       ...this.infoForm.value,
@@ -169,16 +214,9 @@ export class CarFormComponent implements OnInit {
       formData.append('photo_url', this.photoFile() as File);
     }
 
-    if (geo) {
-      formData.append('lat', String(geo.lat));
-      formData.append('lng', String(geo.lng));
-    }
-
-    const addressInput = document.getElementById('address') as HTMLInputElement | null;
-    const address = addressInput?.value?.trim() ?? '';
-    if (address) {
-      formData.append('address', address);
-    }
+    formData.append('lat', String(geo.lat));
+    formData.append('lng', String(geo.lng));
+    formData.append('address', address);
 
     this.submitting.set(true);
     const request$ = this.editingCar()
@@ -215,12 +253,19 @@ export class CarFormComponent implements OnInit {
       equipments: Array.isArray(car.equipments)
         ? car.equipments.join(', ')
         : (car.equipments ?? 'GPS, Airbags'),
-      city: car.city ?? '',
     });
     this.photoPreview.set(car.photo_url ?? null);
     this.photoName.set(car.photo_url ? 'Image existante' : null);
     this.photoFile.set(null);
-    this.selectedGeolocation.set(null);
+    const lat = car.latitude;
+    const lng = car.longitude;
+    if (lat != null && lng != null && !Number.isNaN(lat) && !Number.isNaN(lng)) {
+      this.selectedGeolocation.set({ lat, lng });
+      this.committedAddressForGeoloc.set((car.address ?? '').trim());
+    } else {
+      this.selectedGeolocation.set(null);
+      this.committedAddressForGeoloc.set(null);
+    }
   }
 
   private resetForms(): void {
@@ -240,12 +285,13 @@ export class CarFormComponent implements OnInit {
     this.detailsForm.reset({
       description: '',
       equipments: 'GPS, Airbags',
-      city: '',
     });
     this.photoPreview.set(null);
     this.photoName.set(null);
     this.photoFile.set(null);
     this.selectedGeolocation.set(null);
+    this.committedAddressForGeoloc.set(null);
+    this.addressSubmitError.set(null);
     const el = document.getElementById('address') as HTMLInputElement | null;
     if (el) el.value = '';
   }

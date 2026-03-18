@@ -9,11 +9,23 @@ class CarSerializer(serializers.ModelSerializer):
 
     lat = serializers.FloatField(write_only=True, required=False, allow_null=True)
     lng = serializers.FloatField(write_only=True, required=False, allow_null=True)
+    latitude = serializers.SerializerMethodField(read_only=True)
+    longitude = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Car
-        fields = "__all__"
+        exclude = ("location",)
         read_only_fields = ("id", "owner", "created_at")
+
+    def get_latitude(self, obj):
+        if obj.location:
+            return float(obj.location.y)
+        return None
+
+    def get_longitude(self, obj):
+        if obj.location:
+            return float(obj.location.x)
+        return None
 
     def create(self, validated_data):
         lat = validated_data.pop("lat", None)

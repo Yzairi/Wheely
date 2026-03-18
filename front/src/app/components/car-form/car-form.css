@@ -58,6 +58,50 @@ form {
   gap: 16px;
 }
 
+.required-legend {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #555;
+}
+
+.label-line {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.req {
+  color: var(--main-color, #c00);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: help;
+}
+
+.optional {
+  font-weight: 400;
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.field-error {
+  font-size: 0.8rem;
+  color: #b00020;
+  margin-top: 2px;
+}
+
+.photo-hint {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.address-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #555;
+  line-height: 1.35;
+}
+
 label {
   display: flex;
   flex-direction: column;

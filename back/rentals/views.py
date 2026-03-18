@@ -3,6 +3,8 @@ from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+from django.contrib.gis.geos import Point
+from django.contrib.gis.measure import D
 
 from .models import Car, Rental
 from .serializers import CarSerializer, RentalSerializer
@@ -19,6 +21,27 @@ class CarViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    def filter_queryset(self, queryset):
+        queryset = super().filter_queryset(queryset)
+        if self.action != "list":
+            return queryset
+        lat = self.request.query_params.get("lat")
+        lng = self.request.query_params.get("lng")
+        if lat is None or lng is None or lat == "" or lng == "":
+            return queryset
+        try:
+            lat_f = float(lat)
+            lng_f = float(lng)
+            radius_km = float(self.request.query_params.get("radius_km") or 10)
+            if radius_km <= 0 or radius_km > 500:
+                radius_km = 10.0
+        except (TypeError, ValueError):
+            return queryset.none()
+        ref = Point(lng_f, lat_f, srid=4326)
+        return queryset.filter(location__isnull=False).filter(
+            location__distance_lte=(ref, D(km=radius_km))
+        )
 
     @action(
         detail=False, methods=["get"], permission_classes=[permissions.IsAuthenticated]

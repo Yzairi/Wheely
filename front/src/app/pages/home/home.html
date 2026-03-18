@@ -10,8 +10,25 @@
   <div class="search-card">
     <form [formGroup]="form" (ngSubmit)="submit()">
       <div class="form-group">
-        <label>Lieu</label>
-        <input type="text" formControlName="city" />
+        <label for="home-search-address">Adresse</label>
+        <input
+          type="text"
+          id="home-search-address"
+          name="searchAddress"
+          placeholder="Saisissez une adresse"
+          autocomplete="off"
+        />
+        @if (addressError()) {
+          <p class="error-message">Choisissez une adresse dans la liste des suggestions.</p>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="radius_km">Rayon (km)</label>
+        <input type="number" id="radius_km" formControlName="radius_km" min="1" max="200" step="1" />
+        @if (form.get('radius_km')?.invalid && form.get('radius_km')?.touched) {
+          <p class="error-message">Entre 1 et 200 km.</p>
+        }
       </div>
 
       <div class="form-group">
@@ -27,7 +44,7 @@
       <button type="submit" [disabled]="form.invalid">Rechercher</button>
 
       @if (form.errors?.['dateRangeInvalid'] && (form.touched || form.dirty)) {
-      <p class="error-message">La date de fin doit être postérieure à la date de début.</p>
+        <p class="error-message">La date de fin doit être postérieure à la date de début.</p>
       }
     </form>
   </div>

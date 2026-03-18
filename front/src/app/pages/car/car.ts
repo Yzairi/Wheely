@@ -12,6 +12,7 @@ import { signal } from '@angular/core';
   styleUrls: ['./car.css'],
 })
 export class Car implements OnInit {
+  private readonly backendUrl = 'http://localhost:8000';
   private readonly carService = inject(CarService);
   protected readonly cars = this.carService.cars;
   protected readonly carPendingDeletion = signal<any | null>(null);
@@ -46,5 +47,19 @@ export class Car implements OnInit {
 
   private refresh(): void {
     this.carService.fetchMyCars().subscribe();
+  }
+
+  protected getCarPhoto(car: any): string {
+    const photo = car?.photo_url;
+    if (!photo) {
+      return '/car-placeholder.jpg';
+    }
+    if (photo.startsWith('http://') || photo.startsWith('https://')) {
+      return photo;
+    }
+    if (photo.startsWith('/')) {
+      return `${this.backendUrl}${photo}`;
+    }
+    return `${this.backendUrl}/${photo}`;
   }
 }
