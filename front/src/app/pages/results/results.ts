@@ -12,6 +12,7 @@ import { SearchService } from '../../services/search-service';
 })
 export class Results implements OnInit {
   private apiUrl = 'http://localhost:8000/api';
+  private backendUrl = 'http://localhost:8000';
   private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -38,6 +39,20 @@ export class Results implements OnInit {
 
   calculateTotalPrice(dailyPrice: number): number {
     return dailyPrice * this.getNumberOfDays();
+  }
+
+  getCarPhoto(car: any): string {
+    const photo = car?.photo_url;
+    if (!photo) {
+      return '/car-placeholder.jpg';
+    }
+    if (photo.startsWith('http://') || photo.startsWith('https://')) {
+      return photo;
+    }
+    if (photo.startsWith('/')) {
+      return `${this.backendUrl}${photo}`;
+    }
+    return `${this.backendUrl}/${photo}`;
   }
 
   formatDate(dateString: string): string {

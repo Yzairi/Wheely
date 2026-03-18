@@ -18,7 +18,7 @@
 
   <div class="links" [class.open]="menuOpen()">
     <a routerLink="/" (click)="closeMenu()">Home</a>
-    <a routerLink="/annonce" (click)="closeMenu()">Annonce</a>
+    <!-- <a routerLink="/annonce" (click)="closeMenu()">Annonce</a> -->
     @if (isLoggedIn()) {
       <a routerLink="/account" (click)="closeMenu()">Mon compte</a>
     } @else {
