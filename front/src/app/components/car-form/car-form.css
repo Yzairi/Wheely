@@ -42,7 +42,9 @@
   background: rgba(0, 0, 0, 0.1);
   color: #333;
   cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .stepper button.active {
@@ -117,7 +119,9 @@ button {
   cursor: pointer;
   background-color: var(--main-color);
   color: #fff;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 button.secondary {

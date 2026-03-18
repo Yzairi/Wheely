@@ -1,5 +1,7 @@
 from django.conf import settings
-from django.db import models
+from django.contrib.gis.db import models
+
+# from django.db import models
 
 
 class Car(models.Model):
@@ -23,8 +25,10 @@ class Car(models.Model):
     description = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     city = models.TextField(blank=True)
-    lat = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
-    lon = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    # lat = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    # lon = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    address = models.CharField(max_length=255, null=True, blank=True)
+    location = models.PointField(null=True, blank=True)
 
 
 class Rental(models.Model):

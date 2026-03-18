@@ -78,11 +78,7 @@
     </form>
   } @else {
     <form [formGroup]="detailsForm" (ngSubmit)="submit()">
-      <div
-        class="photo-dropzone"
-        (dragover)="allowDrop($event)"
-        (drop)="handleDrop($event)"
-      >
+      <div class="photo-dropzone" (dragover)="allowDrop($event)" (drop)="handleDrop($event)">
         <p *ngIf="!photoPreview()">Glissez une photo ou cliquez pour choisir</p>
         <img *ngIf="photoPreview()" [src]="photoPreview()" alt="Prévisualisation" />
         <span *ngIf="photoName()">{{ photoName() }}</span>
@@ -99,6 +95,10 @@
       <label>
         Ville
         <input formControlName="city" placeholder="Paris" />
+      </label>
+      <label>
+        Adresse
+        <input type="text" id="address" placeholder="Adresse" />
       </label>
       <div class="actions">
         <button type="button" class="secondary" (click)="goPrevious()">Retour</button>

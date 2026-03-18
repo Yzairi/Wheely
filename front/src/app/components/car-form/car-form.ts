@@ -1,8 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, Injector, OnInit, afterNextRender, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CarService } from '../../services/car_services/car';
+import { GoogleMapsLoaderService } from '../../services/google-maps-loader-service';
+
+declare var google: any;
 
 @Component({
   selector: 'app-car-form',
@@ -16,6 +19,8 @@ export class CarFormComponent implements OnInit {
   private readonly carService = inject(CarService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly gmapsLoader = inject(GoogleMapsLoaderService);
+  private readonly injector = inject(Injector);
 
   protected readonly currentStep = signal(0);
   protected readonly submitting = signal(false);
@@ -23,6 +28,8 @@ export class CarFormComponent implements OnInit {
   protected readonly photoPreview = signal<string | null>(null);
   protected readonly photoName = signal<string | null>(null);
   protected readonly photoFile = signal<File | null>(null);
+  /** Position si l’utilisateur choisit une adresse dans l’autocomplete (optionnel). */
+  protected readonly selectedGeolocation = signal<{ lat: number; lng: number } | null>(null);
 
   protected readonly infoForm = this.fb.group({
     brand: [''],
@@ -61,6 +68,34 @@ export class CarFormComponent implements OnInit {
     });
   }
 
+  /** L’input #address n’existe qu’à l’étape 2 : on attache l’autocomplete après le rendu. */
+  private async setupAddressAutocomplete(): Promise<void> {
+    await this.gmapsLoader.load();
+    afterNextRender(
+      () => {
+        if (this.currentStep() !== 2) return;
+        const input = document.getElementById('address') as HTMLInputElement | null;
+        if (!input) return;
+
+        const car = this.editingCar();
+        if (car?.address && !input.value) {
+          input.value = car.address;
+        }
+
+        const autocomplete = new google.maps.places.Autocomplete(input);
+        autocomplete.addListener('place_changed', () => {
+          const place = autocomplete.getPlace();
+          if (!place.geometry) return;
+
+          const lat = place.geometry.location.lat();
+          const lng = place.geometry.location.lng();
+          this.selectedGeolocation.set({ lat, lng });
+        });
+      },
+      { injector: this.injector },
+    );
+  }
+
   protected goNext(): void {
     const step = this.currentStep();
     if (step === 0 && this.infoForm.invalid) {
@@ -72,6 +107,9 @@ export class CarFormComponent implements OnInit {
       return;
     }
     this.currentStep.update((value) => Math.min(value + 1, 2));
+    if (step === 1) {
+      void this.setupAddressAutocomplete();
+    }
   }
 
   protected goPrevious(): void {
@@ -90,6 +128,9 @@ export class CarFormComponent implements OnInit {
       return;
     }
     this.currentStep.set(target);
+    if (target === 2) {
+      void this.setupAddressAutocomplete();
+    }
   }
 
   protected submit(): void {
@@ -97,6 +138,8 @@ export class CarFormComponent implements OnInit {
       this.detailsForm.markAllAsTouched();
       return;
     }
+
+    const geo = this.selectedGeolocation();
 
     const payload = {
       ...this.infoForm.value,
@@ -124,6 +167,17 @@ export class CarFormComponent implements OnInit {
 
     if (this.photoFile()) {
       formData.append('photo_url', this.photoFile() as File);
+    }
+
+    if (geo) {
+      formData.append('lat', String(geo.lat));
+      formData.append('lng', String(geo.lng));
+    }
+
+    const addressInput = document.getElementById('address') as HTMLInputElement | null;
+    const address = addressInput?.value?.trim() ?? '';
+    if (address) {
+      formData.append('address', address);
     }
 
     this.submitting.set(true);
@@ -160,12 +214,13 @@ export class CarFormComponent implements OnInit {
       description: car.description ?? '',
       equipments: Array.isArray(car.equipments)
         ? car.equipments.join(', ')
-        : car.equipments ?? 'GPS, Airbags',
+        : (car.equipments ?? 'GPS, Airbags'),
       city: car.city ?? '',
     });
     this.photoPreview.set(car.photo_url ?? null);
     this.photoName.set(car.photo_url ? 'Image existante' : null);
     this.photoFile.set(null);
+    this.selectedGeolocation.set(null);
   }
 
   private resetForms(): void {
@@ -190,6 +245,9 @@ export class CarFormComponent implements OnInit {
     this.photoPreview.set(null);
     this.photoName.set(null);
     this.photoFile.set(null);
+    this.selectedGeolocation.set(null);
+    const el = document.getElementById('address') as HTMLInputElement | null;
+    if (el) el.value = '';
   }
 
   protected handleFileInput(event: Event): void {
