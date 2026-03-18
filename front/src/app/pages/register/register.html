@@ -16,9 +16,12 @@
   <button type="submit" [disabled]="form.invalid">S'inscrire</button>
 </form>
 
-<button type="button" class="google-button" (click)="signupWithGoogle()" disabled>
-  Continuer avec Google (bientôt dispo)
+<button type="button" class="google-button" (click)="signupWithGoogle()">
+  Continuer avec Google
 </button>
+@if (googleError) {
+<p class="error">{{ googleError }}</p>
+}
 
 @if (message) {
 <p class="status" [class.status-error]="message.includes('Erreur')">

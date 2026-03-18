@@ -19,6 +19,18 @@ export class Auth {
     );
   }
 
+  googleLogin(idToken: string) {
+    return this.http.post(`${this.apiUrl}/google/`, { id_token: idToken }).pipe(
+      tap((res: any) => {
+        this.saveTokens(res.access, res.refresh);
+      })
+    );
+  }
+
+  googleRedirectUrl(): string {
+    return `${this.apiUrl}/google/login/`;
+  }
+
   refresh() {
     const refresh = localStorage.getItem('refresh');
 
@@ -62,5 +74,18 @@ export class Auth {
     } catch {
       return null;
     }
+  }
+
+  getProfile() {
+    return this.http.get<{
+      id: number;
+      username: string;
+      email: string;
+      phone_number: string | null;
+      first_name: string;
+      last_name: string;
+      avatar_url: string;
+      email_verified: boolean;
+    }>(`${this.apiUrl}/profile/`);
   }
 }

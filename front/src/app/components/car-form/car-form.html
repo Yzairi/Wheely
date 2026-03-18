@@ -42,11 +42,22 @@
     <form [formGroup]="specForm" (ngSubmit)="goNext()">
       <label>
         Carburant
-        <input formControlName="fuel_type" placeholder="Essence" />
+        <select formControlName="fuel_type">
+          <option value="" disabled>Choisir un carburant</option>
+          <option value="Essence">Essence</option>
+          <option value="Diesel">Diesel</option>
+          <option value="Hybride">Hybride</option>
+          <option value="Electrique">Electrique</option>
+          <option value="GPL">GPL</option>
+        </select>
       </label>
       <label>
         Boîte de vitesses
-        <input formControlName="gearbox" placeholder="Automatique" />
+        <select formControlName="gearbox">
+          <option value="" disabled>Choisir une boîte</option>
+          <option value="Manuelle">Manuelle</option>
+          <option value="Automatique">Automatique</option>
+        </select>
       </label>
       <label>
         Portes

@@ -1,0 +1,19 @@
+<section class="my-info">
+  <div class="header">
+    <button class="back-button" (click)="goBack()">
+      <span class="back-icon">←</span>
+      <span class="back-text">Retour</span>
+    </button>
+    <h1>Mes infos</h1>
+  </div>
+
+  @if (loading()) {
+  <div class="loading">Chargement...</div>
+  } @else if (profile()) {
+  <div class="info-content">
+    <p class="info-line">{{ fullName }}</p>
+    <p class="info-line">{{ profile()!.phone_number || 'Non renseigné' }}</p>
+    <p class="info-line">{{ profile()!.email }}</p>
+  </div>
+  }
+</section>

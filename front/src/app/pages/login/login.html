@@ -20,8 +20,11 @@
 <p class="error">{{ error }}</p>
 }
 
-<button type="button" class="google-button" (click)="loginWithGoogle()" disabled>
-  Continuer avec Google (bientôt dispo)
+<button type="button" class="google-button" (click)="loginWithGoogle()">
+  Continuer avec Google
 </button>
+@if (googleError) {
+<p class="error">{{ googleError }}</p>
+}
 
 <p class="auth-cta">Pas de compte ? <a routerLink="/register">Inscrivez-vous</a></p>

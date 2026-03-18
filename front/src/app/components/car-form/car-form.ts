@@ -22,6 +22,7 @@ export class CarFormComponent implements OnInit {
   protected readonly editingCar = signal<any | null>(null);
   protected readonly photoPreview = signal<string | null>(null);
   protected readonly photoName = signal<string | null>(null);
+  protected readonly photoFile = signal<File | null>(null);
 
   protected readonly infoForm = this.fb.group({
     brand: [''],
@@ -39,7 +40,6 @@ export class CarFormComponent implements OnInit {
   });
 
   protected readonly detailsForm = this.fb.group({
-    photo_url: [''],
     description: [''],
     equipments: ['GPS, Airbags'],
     city: [''],
@@ -102,22 +102,34 @@ export class CarFormComponent implements OnInit {
       ...this.infoForm.value,
       ...this.specForm.value,
       ...this.detailsForm.value,
-      geolocalization: this.detailsForm.value.city
-        ? { city: this.detailsForm.value.city }
-        : {},
       equipments:
         this.detailsForm.value.equipments
           ?.split(',')
           .map((item) => item.trim())
           .filter((item) => !!item) ?? [],
       is_available: this.editingCar()?.is_available ?? true,
-      photo_url: this.photoPreview() ?? this.detailsForm.value.photo_url,
     };
+
+    const formData = new FormData();
+    Object.entries(payload).forEach(([key, value]) => {
+      if (value === null || value === undefined) {
+        return;
+      }
+      if (Array.isArray(value)) {
+        formData.append(key, JSON.stringify(value));
+        return;
+      }
+      formData.append(key, String(value));
+    });
+
+    if (this.photoFile()) {
+      formData.append('photo_url', this.photoFile() as File);
+    }
 
     this.submitting.set(true);
     const request$ = this.editingCar()
-      ? this.carService.updateCar(this.editingCar()!.id, payload)
-      : this.carService.createCar(payload);
+      ? this.carService.updateCar(this.editingCar()!.id, formData)
+      : this.carService.createCar(formData);
 
     request$.subscribe({
       next: () => {
@@ -145,15 +157,15 @@ export class CarFormComponent implements OnInit {
     });
 
     this.detailsForm.patchValue({
-      photo_url: car.photo_url ?? '',
       description: car.description ?? '',
       equipments: Array.isArray(car.equipments)
         ? car.equipments.join(', ')
         : car.equipments ?? 'GPS, Airbags',
-      city: car.geolocalization?.city ?? '',
+      city: car.city ?? '',
     });
     this.photoPreview.set(car.photo_url ?? null);
     this.photoName.set(car.photo_url ? 'Image existante' : null);
+    this.photoFile.set(null);
   }
 
   private resetForms(): void {
@@ -171,13 +183,13 @@ export class CarFormComponent implements OnInit {
       daily_price: 0,
     });
     this.detailsForm.reset({
-      photo_url: '',
       description: '',
       equipments: 'GPS, Airbags',
       city: '',
     });
     this.photoPreview.set(null);
     this.photoName.set(null);
+    this.photoFile.set(null);
   }
 
   protected handleFileInput(event: Event): void {
@@ -206,7 +218,7 @@ export class CarFormComponent implements OnInit {
       const result = reader.result as string;
       this.photoPreview.set(result);
       this.photoName.set(file.name);
-      this.detailsForm.patchValue({ photo_url: result });
+      this.photoFile.set(file);
     };
     reader.readAsDataURL(file);
   }
