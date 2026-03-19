@@ -18,7 +18,7 @@
         @for (rental of activeRentals; track rental.id) {
         <div class="rental-card">
           <img
-            [src]="'/car-placeholder.jpg'"
+            [src]="getCarPhoto(rental.car)"
             [alt]="rental.car.brand + ' ' + rental.car.model"
             class="rental-image"
           />
@@ -39,7 +39,7 @@
         @for (rental of pastRentals; track rental.id) {
         <div class="rental-card">
           <img
-            [src]="'/car-placeholder.jpg'"
+            [src]="getCarPhoto(rental.car)"
             [alt]="rental.car.brand + ' ' + rental.car.model"
             class="rental-image"
           />

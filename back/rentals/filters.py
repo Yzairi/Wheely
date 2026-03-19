@@ -8,7 +8,7 @@ class CarFilter(django_filters.FilterSet):
 
     class Meta:
         model = Car
-        exclude = ["equipments", "geolocalization", "photo_url"]
+        fields = ["is_available"]
 
     def filter_available(self, queryset, name, value):
         start = self.data.get("start_date")

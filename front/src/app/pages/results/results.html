@@ -9,7 +9,7 @@
       {{ cars().length }} résultat{{ cars().length > 1 ? 's' : '' }} pour votre recherche :
     </p>
     <ul class="criteria-list">
-      <li>📍 {{ city }}</li>
+      <li>📍 {{ addressLabel }} (dans un rayon de {{ radiusKm }} km)</li>
       <li>
         📅 du {{ getFormattedStartDate() }} au {{ getFormattedEndDate() }} ({{
           getNumberOfDays()
@@ -22,22 +22,24 @@
 
   <div class="cars-list">
     @for (car of cars(); track car.id) {
-    <div class="car-card" (click)="goToRental(car.id)">
-      <div class="car-image">
-        <img [src]="getCarPhoto(car)" alt="{{ car.brand }} {{ car.model }}" />
-      </div>
-      <div class="car-details">
-        <div class="car-main">
-          <h3 class="car-title">{{ car.brand }} {{ car.model }}</h3>
-          <p class="car-info">{{ car.year }} - {{ car.mileage }} km</p>
-          <p class="car-info">{{ car.fuel_type }} - {{ car.gearbox }}</p>
+      <div class="car-card" (click)="goToRental(car.id)">
+        <div class="car-image">
+          <img [src]="getCarPhoto(car)" alt="{{ car.brand }} {{ car.model }}" />
         </div>
-        <div class="car-meta">
-          <p class="car-price">{{ calculateTotalPrice(car.daily_price) }} €</p>
-          <p class="car-price-label">pour {{ getNumberOfDays() }} jour{{ getNumberOfDays() > 1 ? 's' : '' }}</p>
+        <div class="car-details">
+          <div class="car-main">
+            <h3 class="car-title">{{ car.brand }} {{ car.model }}</h3>
+            <p class="car-info">{{ car.year }} - {{ car.mileage }} km</p>
+            <p class="car-info">{{ car.fuel_type }} - {{ car.gearbox }}</p>
+          </div>
+          <div class="car-meta">
+            <p class="car-price">{{ calculateTotalPrice(car.daily_price) }} €</p>
+            <p class="car-price-label">
+              pour {{ getNumberOfDays() }} jour{{ getNumberOfDays() > 1 ? 's' : '' }}
+            </p>
+          </div>
         </div>
       </div>
-    </div>
     }
   </div>
 </div>

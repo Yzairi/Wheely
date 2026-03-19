@@ -8,7 +8,7 @@
 
   <div class="car-image-container">
     <img
-      src="/car-placeholder.jpg"
+      [src]="getCarPhoto(car())"
       [alt]="car().brand + ' ' + car().model"
       class="car-image"
     />
