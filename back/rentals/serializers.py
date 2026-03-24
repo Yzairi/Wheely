@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from .models import Car, Rental, Rating, Comment
+from django.contrib.gis.geos import Point
 from accounts.serializers import UserSerializer
 
 
@@ -21,16 +22,28 @@ class CarSerializer(serializers.ModelSerializer):
     average_rating = serializers.SerializerMethodField()
     comments = serializers.SerializerMethodField()
 
+    # WRITE (input)
+    lat = serializers.FloatField(write_only=True, required=False, allow_null=True)
+    lng = serializers.FloatField(write_only=True, required=False, allow_null=True)
+
+    # READ (output)
+    latitude = serializers.SerializerMethodField(read_only=True)
+    longitude = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Car
         fields = [
             "id", "owner", "brand", "model", "year", "fuel_type", "gearbox",
             "doors", "seats", "equipments", "mileage", "photo_url", "is_available",
-            "daily_price", "description", "created_at", "city", "lat", "lon",
+            "daily_price", "description", "created_at", "city",
+            "lat", "lng", "latitude", "longitude",
             "average_rating", "comments"
         ]
         read_only_fields = ("id", "owner", "created_at")
 
+    # =========================
+    # RATING / COMMENTS LOGIC
+    # =========================
     def get_average_rating(self, obj):
         return obj.average_rating
 
@@ -39,6 +52,50 @@ class CarSerializer(serializers.ModelSerializer):
             Comment.objects.filter(rental__car=obj).select_related('rental'),
             many=True
         ).data
+
+    # =========================
+    # LOCATION (READ)
+    # =========================
+    def get_latitude(self, obj):
+        if obj.location:
+            return float(obj.location.y)
+        return None
+
+    def get_longitude(self, obj):
+        if obj.location:
+            return float(obj.location.x)
+        return None
+
+    # =========================
+    # LOCATION (WRITE)
+    # =========================
+    def create(self, validated_data):
+        lat = validated_data.pop("lat", None)
+        lng = validated_data.pop("lng", None)
+
+        if (lat is None) ^ (lng is None):
+            raise serializers.ValidationError(
+                "lat et lng doivent être envoyés ensemble."
+            )
+
+        if lat is not None and lng is not None:
+            validated_data["location"] = Point(lng, lat)
+
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        lat = validated_data.pop("lat", None)
+        lng = validated_data.pop("lng", None)
+
+        if (lat is None) ^ (lng is None):
+            raise serializers.ValidationError(
+                "lat et lng doivent être envoyés ensemble."
+            )
+
+        if lat is not None and lng is not None:
+            validated_data["location"] = Point(lng, lat)
+
+        return super().update(instance, validated_data)
 
 
 class RentalFeedbackSerializer(serializers.Serializer):

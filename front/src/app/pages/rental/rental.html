@@ -11,7 +11,7 @@
   <h1 class="car-title">{{ car().brand }} {{ car().model }}</h1>
 
   <div class="car-image-container">
-    <img src="/car-placeholder.jpg" [alt]="car().brand + ' ' + car().model" class="car-image" />
+    <img [src]="getCarPhoto(car())" [alt]="car().brand + ' ' + car().model" class="car-image" />
 
     @if (car().average_rating) {
     <div class="rating">
@@ -42,6 +42,7 @@
       <li>{{ car().gearbox }}</li>
       <li>{{ car().doors }} portes</li>
     </ul>
+
     @if (car().equipments && car().equipments.length > 0) {
     <div class="options-section">
       <h3 class="options-title">Option</h3>
@@ -54,6 +55,7 @@
     }
   </div>
 
+  <!-- ⭐ COMMENTAIRES -->
   @if (car().comments && car().comments.length > 0) {
   <div class="comments-card">
     <h2 class="comments-title">Commentaires</h2>
@@ -65,5 +67,23 @@
     }
   </div>
   }
+
+  <!-- 🗺️ LOCALISATION -->
+  @if (hasCarLocation(car())) {
+  <div class="map-section">
+    <h2 class="map-section-title">Localisation du véhicule</h2>
+    @if (car().address) {
+    <p class="map-address">{{ car().address }}</p>
+    }
+    <div id="rental-map" class="rental-map" role="region" aria-label="Carte de la position du véhicule"></div>
+  </div>
+  } @else if (car().address) {
+  <div class="map-section map-section--no-coords">
+    <h2 class="map-section-title">Adresse</h2>
+    <p class="map-address">{{ car().address }}</p>
+    <p class="map-fallback">Position précise non renseignée pour cette annonce.</p>
+  </div>
+  }
+
 </div>
 }

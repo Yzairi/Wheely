@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SearchService } from '../../services/search-service';
@@ -20,7 +20,10 @@ export class Results implements OnInit {
   cars = signal<any>([]);
   startDate: string = '';
   endDate: string = '';
-  city: string = '';
+  addressLabel: string = '';
+  radiusKm = 10;
+  searchLat = 0;
+  searchLng = 0;
 
   goBack() {
     this.router.navigate(['/']);
@@ -34,7 +37,7 @@ export class Results implements OnInit {
     const end = new Date(this.endDate);
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays || 1; // Au moins 1 jour
+    return diffDays || 1;
   }
 
   calculateTotalPrice(dailyPrice: number): number {
@@ -82,65 +85,101 @@ export class Results implements OnInit {
     return this.formatDate(this.endDate);
   }
 
-  searchAvailableCars(city: any, start: any, end: any) {
-    return this.http
-      .get(
-        `${this.apiUrl}/rentals/cars?city=${city}&start_date=${start}&end_date=${end}&is_available=true`
-      )
-      .subscribe((data) => this.cars.set(data));
+  private searchParams(lat: number, lng: number, radius: number, start: string, end: string) {
+    return new HttpParams()
+      .set('lat', String(lat))
+      .set('lng', String(lng))
+      .set('radius_km', String(radius))
+      .set('start_date', start)
+      .set('end_date', end)
+      .set('is_available', 'true');
+  }
+
+  searchAvailableCars(
+    lat: number,
+    lng: number,
+    radiusKm: number,
+    start: string,
+    end: string,
+  ) {
+    const params = this.searchParams(lat, lng, radiusKm, start, end);
+    this.http.get(`${this.apiUrl}/rentals/cars/`, { params }).subscribe((data) => this.cars.set(data as any[]));
   }
 
   ngOnInit(): void {
-    // Essayer d'abord de récupérer depuis les query params
     this.route.queryParams.subscribe((params) => {
-      const city = params['city'];
+      const lat = parseFloat(params['lat'] ?? '');
+      const lng = parseFloat(params['lng'] ?? '');
       const start_date = params['start_date'];
       const end_date = params['end_date'];
+      const radius = parseInt(params['radius_km'] ?? '10', 10);
+      const address = params['address'] ? decodeURIComponent(params['address']) : '';
 
-      if (city && start_date && end_date) {
-        // Si on a les paramètres dans l'URL, les utiliser
-        this.city = city;
+      if (
+        !Number.isNaN(lat) &&
+        !Number.isNaN(lng) &&
+        start_date &&
+        end_date
+      ) {
+        this.addressLabel = address;
+        this.searchLat = lat;
+        this.searchLng = lng;
+        this.radiusKm = Number.isNaN(radius) || radius < 1 ? 10 : Math.min(radius, 200);
         this.startDate = start_date;
         this.endDate = end_date;
-
-        // Sauvegarder aussi dans le service pour compatibilité
-        this.searchService.setCriteria({ city, start_date, end_date });
-
-        this.searchAvailableCars(city, start_date, end_date);
-      } else {
-        // Sinon, essayer depuis le service (fallback)
-        const criteria = this.searchService.criteria();
-        if (!criteria) {
-          this.router.navigate(['/']);
-          return;
-        }
-        const { city, start_date, end_date } = criteria;
-        this.city = city;
-        this.startDate = start_date;
-        this.endDate = end_date;
-        this.searchAvailableCars(city, start_date, end_date);
+        this.searchService.setCriteria({
+          address,
+          lat,
+          lng,
+          radius_km: this.radiusKm,
+          start_date,
+          end_date,
+        });
+        this.searchAvailableCars(lat, lng, this.radiusKm, start_date, end_date);
+        return;
       }
+
+      const criteria = this.searchService.criteria();
+      if (!criteria) {
+        this.router.navigate(['/']);
+        return;
+      }
+      this.addressLabel = criteria.address;
+      this.searchLat = criteria.lat;
+      this.searchLng = criteria.lng;
+      this.radiusKm = criteria.radius_km;
+      this.startDate = criteria.start_date;
+      this.endDate = criteria.end_date;
+      this.searchAvailableCars(
+        criteria.lat,
+        criteria.lng,
+        criteria.radius_km,
+        criteria.start_date,
+        criteria.end_date,
+      );
     });
   }
 
+  searchQueryParams() {
+    return {
+      address: encodeURIComponent(this.addressLabel),
+      lat: this.searchLat,
+      lng: this.searchLng,
+      radius_km: this.radiusKm,
+      start_date: this.startDate,
+      end_date: this.endDate,
+    };
+  }
+
   goToSearch() {
-    // Conserver les query params lors de la navigation vers la page de recherche
-    this.router.navigate(['/'], {
-      queryParams: {
-        city: this.city,
-        start_date: this.startDate,
-        end_date: this.endDate,
-      },
-    });
+    this.router.navigate(['/'], { queryParams: this.searchQueryParams() });
   }
 
   goToRental(carId: number) {
     this.router.navigate(['/rental'], {
       queryParams: {
         id: carId,
-        city: this.city,
-        start_date: this.startDate,
-        end_date: this.endDate,
+        ...this.searchQueryParams(),
       },
     });
   }

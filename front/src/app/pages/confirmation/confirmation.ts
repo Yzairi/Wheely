@@ -12,6 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class Confirmation implements OnInit {
   private apiUrl = 'http://localhost:8000/api';
+  private backendUrl = 'http://localhost:8000';
   private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -45,6 +46,20 @@ export class Confirmation implements OnInit {
 
   getFormattedEndDate(): string {
     return this.formatDate(this.endDate);
+  }
+
+  getCarPhoto(car: any): string {
+    const photo = car?.photo_url;
+    if (!photo) {
+      return '/car-placeholder.jpg';
+    }
+    if (photo.startsWith('http://') || photo.startsWith('https://')) {
+      return photo;
+    }
+    if (photo.startsWith('/')) {
+      return `${this.backendUrl}${photo}`;
+    }
+    return `${this.backendUrl}/${photo}`;
   }
 
   getNumberOfDays(): number {

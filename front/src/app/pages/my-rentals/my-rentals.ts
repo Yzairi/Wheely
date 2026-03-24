@@ -31,6 +31,7 @@ interface FeedbackState {
 })
 export class MyRentals implements OnInit {
   private apiUrl = 'http://localhost:8000/api';
+  private backendUrl = 'http://localhost:8000';
   private http = inject(HttpClient);
   private router = inject(Router);
 
@@ -55,6 +56,20 @@ export class MyRentals implements OnInit {
       const endDate = new Date(rental.end_date);
       return endDate < now;
     });
+  }
+
+  getCarPhoto(car: Rental['car']): string {
+    const photo = car?.photo_url;
+    if (!photo) {
+      return '/car-placeholder.jpg';
+    }
+    if (photo.startsWith('http://') || photo.startsWith('https://')) {
+      return photo;
+    }
+    if (photo.startsWith('/')) {
+      return `${this.backendUrl}${photo}`;
+    }
+    return `${this.backendUrl}/${photo}`;
   }
 
   formatDate(dateString: string): string {
