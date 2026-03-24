@@ -13,6 +13,13 @@ interface Rental {
   };
   start_date: string;
   end_date: string;
+  rating?: { value: number };
+  comment?: { text: string };
+}
+
+interface FeedbackState {
+  rating?: number;
+  comment?: string;
 }
 
 @Component({
@@ -29,6 +36,10 @@ export class MyRentals implements OnInit {
 
   rentals = signal<Rental[]>([]);
   loading = signal<boolean>(true);
+
+  feedbackState = signal<Record<number, FeedbackState>>({});
+  feedbackOpen = signal<Record<number, boolean>>({});
+  submitting = signal<Record<number, boolean>>({});
 
   get activeRentals(): Rental[] {
     const now = new Date();
@@ -71,7 +82,71 @@ export class MyRentals implements OnInit {
     this.router.navigate(['/account']);
   }
 
+  setFeedbackRating(rentalId: number, value: number) {
+    const state = this.feedbackState();
+    this.feedbackState.set({
+      ...state,
+      [rentalId]: {
+        ...state[rentalId],
+        rating: value,
+      },
+    });
+  }
+
+  setFeedbackComment(rentalId: number, value: string) {
+    const state = this.feedbackState();
+    this.feedbackState.set({
+      ...state,
+      [rentalId]: {
+        ...state[rentalId],
+        comment: value,
+      },
+    });
+  }
+
+  toggleFeedbackForm(rentalId: number) {
+    const open = this.feedbackOpen();
+    this.feedbackOpen.set({
+      ...open,
+      [rentalId]: !open[rentalId],
+    });
+  }
+
+  sendFeedback(rentalId: number) {
+    const state = this.feedbackState()[rentalId] || {};
+    const payload: any = {};
+    if (state.rating != null) {
+      payload.rating = state.rating;
+    }
+    if (state.comment != null) {
+      payload.comment = state.comment;
+    }
+
+    if (Object.keys(payload).length === 0) {
+      return;
+    }
+
+    this.submitting.set({ ...this.submitting(), [rentalId]: true });
+
+    this.http
+      .post(`${this.apiUrl}/rentals/rentals/${rentalId}/feedback/`, payload)
+      .subscribe({
+        next: () => {
+          this.fetchRentals();
+          this.submitting.set({ ...this.submitting(), [rentalId]: false });
+          this.feedbackOpen.set({ ...this.feedbackOpen(), [rentalId]: false });
+        },
+        error: () => {
+          this.submitting.set({ ...this.submitting(), [rentalId]: false });
+        },
+      });
+  }
+
   ngOnInit(): void {
+    this.fetchRentals();
+  }
+
+  private fetchRentals() {
     this.http.get<Rental[]>(`${this.apiUrl}/rentals/rentals/`).subscribe({
       next: (data) => {
         this.rentals.set(data);
@@ -84,3 +159,4 @@ export class MyRentals implements OnInit {
     });
   }
 }
+

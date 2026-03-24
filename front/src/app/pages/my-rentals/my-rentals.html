@@ -28,6 +28,48 @@
             <p class="rental-dates">au {{ formatDate(rental.end_date) }}</p>
             <p class="rental-price">{{ calculateTotalPrice(rental) }} €</p>
           </div>
+
+          @if (!rental.rating || !rental.comment) {
+          <button class="add-feedback-btn" (click)="toggleFeedbackForm(rental.id)">
+            Ajouter votre avis
+          </button>
+
+          @if (feedbackOpen()[rental.id]) {
+          <div class="feedback-form">
+            <div class="rating-stars">
+              @for (i of [1, 2, 3, 4, 5]; track i) {
+              <button
+                type="button"
+                class="star"
+                [class.selected]="feedbackState()[rental.id]?.rating === i"
+                (click)="setFeedbackRating(rental.id, i)"
+              >
+                ★
+              </button>
+              }
+            </div>
+
+            <label class="feedback-label">Commentaire</label>
+            <textarea
+              class="feedback-textarea"
+              (input)="setFeedbackComment(rental.id, $any($event.target).value)"
+              placeholder="Écrire un retour..."
+            ></textarea>
+
+            <button
+              class="feedback-button"
+              (click)="sendFeedback(rental.id)"
+              [disabled]="submitting()[rental.id]"
+            >
+              {{ submitting()[rental.id] ? 'Envoi...' : 'Envoyer' }}
+            </button>
+          </div>
+          }
+          } @else {
+          <div class="feedback-complete">
+            Merci pour votre avis 👍
+          </div>
+          }
         </div>
         }
       </div>
@@ -49,6 +91,48 @@
             <p class="rental-dates">au {{ formatDate(rental.end_date) }}</p>
             <p class="rental-price">{{ calculateTotalPrice(rental) }} €</p>
           </div>
+
+          @if (!rental.rating || !rental.comment) {
+          <button class="add-feedback-btn" (click)="toggleFeedbackForm(rental.id)">
+            Ajouter votre avis
+          </button>
+
+          @if (feedbackOpen()[rental.id]) {
+          <div class="feedback-form">
+            <div class="rating-stars">
+              @for (i of [1, 2, 3, 4, 5]; track i) {
+              <button
+                type="button"
+                class="star"
+                [class.selected]="feedbackState()[rental.id]?.rating === i"
+                (click)="setFeedbackRating(rental.id, i)"
+              >
+                ★
+              </button>
+              }
+            </div>
+
+            <label class="feedback-label">Commentaire</label>
+            <textarea
+              class="feedback-textarea"
+              (input)="setFeedbackComment(rental.id, $any($event.target).value)"
+              placeholder="Écrire un retour..."
+            ></textarea>
+
+            <button
+              class="feedback-button"
+              (click)="sendFeedback(rental.id)"
+              [disabled]="submitting()[rental.id]"
+            >
+              {{ submitting()[rental.id] ? 'Envoi...' : 'Envoyer' }}
+            </button>
+          </div>
+          }
+          } @else {
+          <div class="feedback-complete">
+            Merci pour votre avis 👍
+          </div>
+          }
         </div>
         }
       </div>

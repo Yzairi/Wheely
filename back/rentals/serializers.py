@@ -41,6 +41,11 @@ class CarSerializer(serializers.ModelSerializer):
         ).data
 
 
+class RentalFeedbackSerializer(serializers.Serializer):
+    rating = serializers.IntegerField(min_value=1, max_value=5, required=False)
+    comment = serializers.CharField(required=False, allow_blank=True)
+
+
 class RentalSerializer(serializers.ModelSerializer):
     client = UserSerializer(read_only=True)
     car = CarSerializer(read_only=True)

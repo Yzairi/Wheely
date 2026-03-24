@@ -15,6 +15,25 @@ export class Car implements OnInit {
   private readonly carService = inject(CarService);
   protected readonly cars = this.carService.cars;
   protected readonly carPendingDeletion = signal<any | null>(null);
+  protected readonly feedbackOpen = signal<Record<number, boolean>>({});
+
+  protected getStars(rating: number | null | undefined): string {
+    if (!rating) {
+      return '☆☆☆☆☆';
+    }
+    const rounded = Math.round(rating);
+    const filled = '★'.repeat(rounded);
+    const empty = '☆'.repeat(5 - rounded);
+    return `${filled}${empty}`;
+  }
+
+  protected toggleFeedback(carId: number): void {
+    const open = this.feedbackOpen();
+    this.feedbackOpen.set({
+      ...open,
+      [carId]: !open[carId],
+    });
+  }
 
   ngOnInit(): void {
     this.refresh();

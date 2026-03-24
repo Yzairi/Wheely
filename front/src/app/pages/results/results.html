@@ -32,6 +32,13 @@
           <p class="car-info">{{ car.year }} - {{ car.mileage }} km</p>
           <p class="car-info">{{ car.fuel_type }} - {{ car.gearbox }}</p>
         </div>
+
+        <div class="car-rating">
+          <span class="stars">{{ getStars(car.average_rating) }}</span>
+          <span class="rating-value">{{ car.average_rating ? car.average_rating.toFixed(1) : '—' }}</span>
+          <span class="comments-count">({{ car.comments?.length || 0 }} avis)</span>
+        </div>
+
         <div class="car-meta">
           <p class="car-price">{{ calculateTotalPrice(car.daily_price) }} €</p>
           <p class="car-price-label">pour {{ getNumberOfDays() }} jour{{ getNumberOfDays() > 1 ? 's' : '' }}</p>

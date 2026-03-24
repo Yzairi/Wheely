@@ -58,12 +58,26 @@ export class Rental implements OnInit {
     return `${day}/${month}/${year}`;
   }
 
+  formatCommentDate(dateString: string): string {
+    return this.formatDate(dateString);
+  }
+
   getFormattedStartDate(): string {
     return this.formatDate(this.startDate);
   }
 
   getFormattedEndDate(): string {
     return this.formatDate(this.endDate);
+  }
+
+  getStars(rating: number | null | undefined): string {
+    if (!rating) {
+      return '☆☆☆☆☆';
+    }
+    const rounded = Math.round(rating);
+    const filled = '★'.repeat(rounded);
+    const empty = '☆'.repeat(5 - rounded);
+    return `${filled}${empty}`;
   }
 
   reserve() {
