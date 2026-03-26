@@ -27,7 +27,35 @@
             {{ car.is_available ? 'Mettre indisponible' : 'Rendre disponible' }}
           </button>
           <button type="button" class="danger" (click)="askDeletion(car)">Supprimer</button>
+          
+          <button type="button" (click)="toggleFeedback(car.id)">
+            Voir notes et commentaires
+          </button>
         </div>
+
+        @if (feedbackOpen()[car.id]) {
+        <div class="feedback-panel">
+          <div class="feedback-summary">
+            <span class="feedback-stars">{{ getStars(car.average_rating) }}</span>
+            <span class="feedback-average">
+              {{ car.average_rating ? car.average_rating.toFixed(1) + '/5' : 'Pas encore de note' }}
+            </span>
+            <span class="feedback-count">({{ car.comments?.length || 0 }} avis)</span>
+          </div>
+          <div class="feedback-list">
+            @if (car.comments && car.comments.length > 0) {
+            @for (comment of car.comments; track comment.created_at) {
+            <div class="feedback-item">
+              <p class="feedback-text">{{ comment.text }}</p>
+              <p class="feedback-meta">{{ comment.created_at | date:'shortDate' }}</p>
+            </div>
+            }
+            } @else {
+            <p class="feedback-empty">Aucun commentaire pour le moment.</p>
+            }
+          </div>
+        </div>
+        }
       </article>
     }
   </div>

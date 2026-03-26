@@ -25,6 +25,37 @@
     <p class="detail-value price">{{ calculateTotalPrice() }}€</p>
   </div>
 
+  @if (!feedbackSaved()) {
+  <div class="feedback-card">
+    <h2 class="feedback-title">Laisser un avis</h2>
+
+    @if (feedbackError()) {
+    <p class="feedback-error">{{ feedbackError() }}</p>
+    }
+
+    <div class="feedback-row">
+      <label>Note</label>
+      <select [(ngModel)]="rating">
+        <option [ngValue]="null">--</option>
+        <option *ngFor="let r of [1, 2, 3, 4, 5]" [ngValue]="r">{{ r }} ★</option>
+      </select>
+    </div>
+
+    <div class="feedback-row">
+      <label>Commentaire</label>
+      <textarea [(ngModel)]="comment" rows="3" placeholder="Votre avis..."></textarea>
+    </div>
+
+    <button class="submit-button" (click)="submitFeedback()" [disabled]="submitting()">
+      {{ submitting() ? 'Enregistrement...' : 'Envoyer mon avis' }}
+    </button>
+  </div>
+  } @else {
+  <div class="feedback-saved">
+    <p>Merci ! Votre avis a bien été enregistré.</p>
+  </div>
+  }
+
   <button class="ok-button" (click)="goHome()">Ok</button>
 </div>
 }

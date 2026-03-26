@@ -23,7 +23,7 @@ export class Rental implements OnInit, OnDestroy {
   private auth = inject(Auth);
   private mapsLoader = inject(GoogleMapsLoaderService);
   private mapCarId: number | null = null;
-  
+
   car = signal<any>(null);
   startDate: string = '';
   endDate: string = '';
@@ -44,14 +44,11 @@ export class Rental implements OnInit, OnDestroy {
   }
 
   getNumberOfDays(): number {
-    if (!this.startDate || !this.endDate) {
-      return 0;
-    }
+    if (!this.startDate || !this.endDate) return 0;
     const start = new Date(this.startDate);
     const end = new Date(this.endDate);
     const diffTime = Math.abs(end.getTime() - start.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays || 1;
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
   }
 
   calculateTotalPrice(dailyPrice: number | string): number {
@@ -69,6 +66,10 @@ export class Rental implements OnInit, OnDestroy {
     return `${day}/${month}/${year}`;
   }
 
+  formatCommentDate(dateString: string): string {
+    return this.formatDate(dateString);
+  }
+
   getFormattedStartDate(): string {
     return this.formatDate(this.startDate);
   }
@@ -77,23 +78,35 @@ export class Rental implements OnInit, OnDestroy {
     return this.formatDate(this.endDate);
   }
 
-  /** Position pour la carte (API latitude/longitude ou GeoJSON éventuel). */
+  // ⭐ RATING
+  getStars(rating: number | null | undefined): string {
+    if (!rating) return '☆☆☆☆☆';
+    const rounded = Math.round(rating);
+    return '★'.repeat(rounded) + '☆'.repeat(5 - rounded);
+  }
+
+  // 🗺️ GEO
   getCarLatLng(car: Record<string, unknown> | null): { lat: number; lng: number } | null {
     if (!car) return null;
+
     const lat = car['latitude'];
     const lng = car['longitude'];
+
     if (typeof lat === 'number' && typeof lng === 'number' && !Number.isNaN(lat) && !Number.isNaN(lng)) {
       return { lat, lng };
     }
+
     if (typeof lat === 'string' && typeof lng === 'string') {
       const la = parseFloat(lat);
       const ln = parseFloat(lng);
       if (!Number.isNaN(la) && !Number.isNaN(ln)) return { lat: la, lng: ln };
     }
+
     const loc = car['location'] as { type?: string; coordinates?: number[] } | undefined;
-    if (loc?.type === 'Point' && Array.isArray(loc.coordinates) && loc.coordinates.length >= 2) {
+    if (loc?.type === 'Point' && Array.isArray(loc.coordinates)) {
       return { lat: loc.coordinates[1], lng: loc.coordinates[0] };
     }
+
     return null;
   }
 
@@ -101,47 +114,36 @@ export class Rental implements OnInit, OnDestroy {
     return this.getCarLatLng(car) !== null;
   }
 
+  // 📸 PHOTO
   getCarPhoto(car: any): string {
     const photo = car?.photo_url;
-    if (!photo) {
-      return '/car-placeholder.jpg';
-    }
-    if (photo.startsWith('http://') || photo.startsWith('https://')) {
-      return photo;
-    }
-    if (photo.startsWith('/')) {
-      return `${this.backendUrl}${photo}`;
-    }
+    if (!photo) return '/car-placeholder.jpg';
+
+    if (photo.startsWith('http://') || photo.startsWith('https://')) return photo;
+    if (photo.startsWith('/')) return `${this.backendUrl}${photo}`;
+
     return `${this.backendUrl}/${photo}`;
   }
 
   reserve() {
-    // Vérifier si l'utilisateur est connecté
     if (!this.auth.isLoggedIn()) {
       this.router.navigate(['/login']);
       return;
     }
 
-    // Vérifier que les données nécessaires sont présentes
     if (!this.car() || !this.startDate || !this.endDate) {
       console.error('Données manquantes pour la réservation');
       return;
     }
 
-    // Créer la réservation
-    // Convertir les dates au format ISO 8601 pour le backend
-    const startDateISO = new Date(this.startDate).toISOString();
-    const endDateISO = new Date(this.endDate).toISOString();
-
     const rentalData = {
       car_id: this.car().id,
-      start_date: startDateISO,
-      end_date: endDateISO,
+      start_date: new Date(this.startDate).toISOString(),
+      end_date: new Date(this.endDate).toISOString(),
     };
 
     this.http.post(`${this.apiUrl}/rentals/rentals/`, rentalData).subscribe({
       next: (response: any) => {
-        // Rediriger vers la page de confirmation avec les données
         this.router.navigate(['/confirmation'], {
           queryParams: {
             id: response.id,
@@ -153,7 +155,7 @@ export class Rental implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Erreur lors de la réservation:', error);
-        alert('Une erreur est survenue lors de la réservation. Veuillez réessayer.');
+        alert('Une erreur est survenue lors de la réservation.');
       },
     });
   }
@@ -175,16 +177,13 @@ export class Rental implements OnInit, OnDestroy {
         next: (data) => {
           this.car.set(data);
           this.loading.set(false);
+
           const pos = this.getCarLatLng(data as Record<string, unknown>);
           if (pos) {
-            setTimeout(() => this.initRentalMap(data as { id: number; brand?: string; model?: string }, pos, 0), 0);
-          } else {
-            this.mapCarId = null;
+            setTimeout(() => this.initRentalMap(data as any, pos), 0);
           }
         },
-        error: () => {
-          this.router.navigate(['/results']);
-        },
+        error: () => this.router.navigate(['/results']),
       });
     });
   }
@@ -195,31 +194,35 @@ export class Rental implements OnInit, OnDestroy {
     attempt = 0,
   ): void {
     const el = document.getElementById('rental-map');
+
     if (!el) {
       if (attempt < 30) {
         setTimeout(() => this.initRentalMap(car, pos, attempt + 1), 50);
       }
       return;
     }
+
     if (this.mapCarId === car.id) return;
 
     this.mapsLoader.load().then(() => {
-      const g = (window as unknown as { google?: { maps: GMaps } }).google;
+      const g = (window as any).google;
       if (!g?.maps) return;
+
       el.innerHTML = '';
+
       const title = [car.brand, car.model].filter(Boolean).join(' ') || 'Véhicule';
+
       const map = new g.maps.Map(el, {
         center: pos,
         zoom: 15,
-        mapTypeControl: true,
-        streetViewControl: true,
-        fullscreenControl: true,
       });
+
       new g.maps.Marker({
         position: pos,
         map,
         title,
       });
+
       this.mapCarId = car.id;
     });
   }

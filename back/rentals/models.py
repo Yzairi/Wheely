@@ -1,4 +1,6 @@
 from django.conf import settings
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
 from django.contrib.gis.db import models
 
 # from django.db import models
@@ -30,6 +32,12 @@ class Car(models.Model):
     address = models.CharField(max_length=255, null=True, blank=True)
     location = models.PointField(null=True, blank=True)
 
+    @property
+    def average_rating(self):
+        from django.db.models import Avg
+        ratings = self.car_rentals.filter(rating__isnull=False).aggregate(avg=Avg('rating__value'))
+        return ratings['avg'] if ratings['avg'] else None
+
 
 class Rental(models.Model):
     client = models.ForeignKey(
@@ -44,4 +52,26 @@ class Rental(models.Model):
     )
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Rating(models.Model):
+    rental = models.OneToOneField(
+        Rental,
+        on_delete=models.CASCADE,
+        related_name="rating",
+    )
+    value = models.PositiveSmallIntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class Comment(models.Model):
+    rental = models.OneToOneField(
+        Rental,
+        on_delete=models.CASCADE,
+        related_name="comment",
+    )
+    text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

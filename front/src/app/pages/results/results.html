@@ -22,24 +22,44 @@
 
   <div class="cars-list">
     @for (car of cars(); track car.id) {
-      <div class="car-card" (click)="goToRental(car.id)">
-        <div class="car-image">
-          <img [src]="getCarPhoto(car)" alt="{{ car.brand }} {{ car.model }}" />
-        </div>
-        <div class="car-details">
-          <div class="car-main">
-            <h3 class="car-title">{{ car.brand }} {{ car.model }}</h3>
-            <p class="car-info">{{ car.year }} - {{ car.mileage }} km</p>
-            <p class="car-info">{{ car.fuel_type }} - {{ car.gearbox }}</p>
-          </div>
-          <div class="car-meta">
-            <p class="car-price">{{ calculateTotalPrice(car.daily_price) }} €</p>
-            <p class="car-price-label">
-              pour {{ getNumberOfDays() }} jour{{ getNumberOfDays() > 1 ? 's' : '' }}
-            </p>
-          </div>
-        </div>
+    <div class="car-card" (click)="goToRental(car.id)">
+      
+      <!-- IMAGE -->
+      <div class="car-image">
+        <img [src]="getCarPhoto(car)" alt="{{ car.brand }} {{ car.model }}" />
       </div>
+
+      <!-- INFOS -->
+      <div class="car-details">
+        
+        <!-- MAIN -->
+        <div class="car-main">
+          <h3 class="car-title">{{ car.brand }} {{ car.model }}</h3>
+          <p class="car-info">{{ car.year }} - {{ car.mileage }} km</p>
+          <p class="car-info">{{ car.fuel_type }} - {{ car.gearbox }}</p>
+        </div>
+
+        <!-- ⭐ RATING -->
+        <div class="car-rating">
+          <span class="stars">{{ getStars(car.average_rating) }}</span>
+          <span class="rating-value">
+            {{ car.average_rating ? car.average_rating.toFixed(1) : '—' }}
+          </span>
+          <span class="comments-count">
+            ({{ car.comments?.length || 0 }} avis)
+          </span>
+        </div>
+
+        <!-- 💰 PRIX -->
+        <div class="car-meta">
+          <p class="car-price">{{ calculateTotalPrice(car.daily_price) }} €</p>
+          <p class="car-price-label">
+            pour {{ getNumberOfDays() }} jour{{ getNumberOfDays() > 1 ? 's' : '' }}
+          </p>
+        </div>
+
+      </div>
+    </div>
     }
   </div>
 </div>
