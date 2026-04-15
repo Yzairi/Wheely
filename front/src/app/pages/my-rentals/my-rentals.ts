@@ -127,6 +127,20 @@ export class MyRentals implements OnInit {
     });
   }
 
+  cancelFeedbackForm(rentalId: number) {
+    const state = { ...this.feedbackState() };
+    const open = { ...this.feedbackOpen() };
+    const submitting = { ...this.submitting() };
+
+    delete state[rentalId];
+    open[rentalId] = false;
+    submitting[rentalId] = false;
+
+    this.feedbackState.set(state);
+    this.feedbackOpen.set(open);
+    this.submitting.set(submitting);
+  }
+
   sendFeedback(rentalId: number) {
     const state = this.feedbackState()[rentalId] || {};
     const payload: any = {};
@@ -174,4 +188,3 @@ export class MyRentals implements OnInit {
     });
   }
 }
-

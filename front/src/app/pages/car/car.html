@@ -29,7 +29,7 @@
           <button type="button" class="danger" (click)="askDeletion(car)">Supprimer</button>
           
           <button type="button" (click)="toggleFeedback(car.id)">
-            Voir notes et commentaires
+            {{ feedbackOpen()[car.id] ? 'Fermer' : 'Voir notes et commentaires' }}
           </button>
         </div>
 
@@ -47,7 +47,7 @@
             @for (comment of car.comments; track comment.created_at) {
             <div class="feedback-item">
               <p class="feedback-text">{{ comment.text }}</p>
-              <p class="feedback-meta">{{ comment.created_at | date:'shortDate' }}</p>
+              <p class="feedback-meta">{{ formatCommentDate(comment.created_at) }}</p>
             </div>
             }
             } @else {

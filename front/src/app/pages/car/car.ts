@@ -28,6 +28,19 @@ export class Car implements OnInit {
     return `${filled}${empty}`;
   }
 
+  protected formatDate(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  protected formatCommentDate(dateString: string): string {
+    return this.formatDate(dateString);
+  }
+
   protected toggleFeedback(carId: number): void {
     const open = this.feedbackOpen();
     this.feedbackOpen.set({

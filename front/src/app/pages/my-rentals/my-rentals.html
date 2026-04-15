@@ -30,10 +30,6 @@
           </div>
 
           @if (!rental.rating || !rental.comment) {
-          <button class="add-feedback-btn" (click)="toggleFeedbackForm(rental.id)">
-            Ajouter votre avis
-          </button>
-
           @if (feedbackOpen()[rental.id]) {
           <div class="feedback-form">
             <div class="rating-stars">
@@ -41,7 +37,7 @@
               <button
                 type="button"
                 class="star"
-                [class.selected]="feedbackState()[rental.id]?.rating === i"
+                [class.selected]="i <= (feedbackState()[rental.id]?.rating ?? 0)"
                 (click)="setFeedbackRating(rental.id, i)"
               >
                 ★
@@ -56,19 +52,32 @@
               placeholder="Écrire un retour..."
             ></textarea>
 
-            <button
-              class="feedback-button"
-              (click)="sendFeedback(rental.id)"
-              [disabled]="submitting()[rental.id]"
-            >
-              {{ submitting()[rental.id] ? 'Envoi...' : 'Envoyer' }}
-            </button>
+            <div class="feedback-actions">
+              <button
+                type="button"
+                class="feedback-cancel-button"
+                (click)="cancelFeedbackForm(rental.id)"
+                [disabled]="submitting()[rental.id]"
+              >
+                Annuler
+              </button>
+              <button
+                class="feedback-button"
+                (click)="sendFeedback(rental.id)"
+                [disabled]="submitting()[rental.id]"
+              >
+                {{ submitting()[rental.id] ? 'Envoi...' : 'Envoyer' }}
+              </button>
+            </div>
           </div>
+          } @else {
+          <button class="add-feedback-btn" (click)="toggleFeedbackForm(rental.id)">
+            Ajouter votre avis
+          </button>
           }
           } @else {
           <div class="feedback-complete">
-            Merci pour votre avis 👍
-          </div>
+            Merci de votre retour          </div>
           }
         </div>
         }
@@ -93,10 +102,6 @@
           </div>
 
           @if (!rental.rating || !rental.comment) {
-          <button class="add-feedback-btn" (click)="toggleFeedbackForm(rental.id)">
-            Ajouter votre avis
-          </button>
-
           @if (feedbackOpen()[rental.id]) {
           <div class="feedback-form">
             <div class="rating-stars">
@@ -104,7 +109,7 @@
               <button
                 type="button"
                 class="star"
-                [class.selected]="feedbackState()[rental.id]?.rating === i"
+                [class.selected]="i <= (feedbackState()[rental.id]?.rating ?? 0)"
                 (click)="setFeedbackRating(rental.id, i)"
               >
                 ★
@@ -119,19 +124,32 @@
               placeholder="Écrire un retour..."
             ></textarea>
 
-            <button
-              class="feedback-button"
-              (click)="sendFeedback(rental.id)"
-              [disabled]="submitting()[rental.id]"
-            >
-              {{ submitting()[rental.id] ? 'Envoi...' : 'Envoyer' }}
-            </button>
+            <div class="feedback-actions">
+              <button
+                type="button"
+                class="feedback-cancel-button"
+                (click)="cancelFeedbackForm(rental.id)"
+                [disabled]="submitting()[rental.id]"
+              >
+                Annuler
+              </button>
+              <button
+                class="feedback-button"
+                (click)="sendFeedback(rental.id)"
+                [disabled]="submitting()[rental.id]"
+              >
+                {{ submitting()[rental.id] ? 'Envoi...' : 'Envoyer' }}
+              </button>
+            </div>
           </div>
+          } @else {
+          <button class="add-feedback-btn" (click)="toggleFeedbackForm(rental.id)">
+            Ajouter votre avis
+          </button>
           }
           } @else {
           <div class="feedback-complete">
-            Merci pour votre avis 👍
-          </div>
+            Merci de votre retour          </div>
           }
         </div>
         }
