@@ -48,4 +48,4 @@ __pycache__/
 *.pyc
 venv/
 
-back/media/
+back/media/cars/

@@ -44,6 +44,16 @@ export class Results implements OnInit {
     return dailyPrice * this.getNumberOfDays();
   }
 
+  getStars(rating: number | null | undefined): string {
+    if (!rating) {
+      return '☆☆☆☆☆';
+    }
+    const rounded = Math.round(rating);
+    const filled = '★'.repeat(rounded);
+    const empty = '☆'.repeat(5 - rounded);
+    return `${filled}${empty}`;
+  }
+
   getCarPhoto(car: any): string {
     const photo = car?.photo_url;
     if (!photo) {

@@ -6,8 +6,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 
-from .models import Car, Rental
-from .serializers import CarSerializer, RentalSerializer
+from .models import Car, Rental, Rating, Comment
+from .serializers import CarSerializer, RentalSerializer, RentalFeedbackSerializer
 from .filters import CarFilter
 
 
@@ -62,6 +62,35 @@ class RentalViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(client=self.request.user)
+
+    @action(
+        detail=True,
+        methods=["post"],
+        url_path="feedback",
+        permission_classes=[permissions.IsAuthenticated],
+    )
+    def feedback(self, request, pk=None):
+        """Ajouter ou mettre à jour une note/commentaire pour une réservation."""
+        rental = self.get_object()
+        serializer = RentalFeedbackSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        rating_value = serializer.validated_data.get("rating")
+        comment_text = serializer.validated_data.get("comment")
+
+        if rating_value is not None:
+            Rating.objects.update_or_create(
+                rental=rental,
+                defaults={"value": rating_value},
+            )
+
+        if comment_text is not None:
+            Comment.objects.update_or_create(
+                rental=rental,
+                defaults={"text": comment_text},
+            )
+
+        return Response({"detail": "Feedback enregistré."})
 
     @action(
         detail=False,

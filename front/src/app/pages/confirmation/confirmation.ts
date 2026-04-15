@@ -5,7 +5,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 @Component({
   selector: 'app-confirmation',
   standalone: true,
-  imports: [],
   templateUrl: './confirmation.html',
   styleUrl: './confirmation.css',
 })

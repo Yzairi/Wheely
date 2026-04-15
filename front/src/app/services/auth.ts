@@ -2,6 +2,17 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
 
+export interface UserProfile {
+  id: number;
+  username: string;
+  email: string;
+  phone_number: string | null;
+  first_name: string;
+  last_name: string;
+  avatar_url: string;
+  email_verified: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class Auth {
   private apiUrl = 'http://localhost:8000/api/auth';
@@ -77,15 +88,10 @@ export class Auth {
   }
 
   getProfile() {
-    return this.http.get<{
-      id: number;
-      username: string;
-      email: string;
-      phone_number: string | null;
-      first_name: string;
-      last_name: string;
-      avatar_url: string;
-      email_verified: boolean;
-    }>(`${this.apiUrl}/profile/`);
+    return this.http.get<UserProfile>(`${this.apiUrl}/profile/`);
+  }
+
+  updateProfile(data: Partial<UserProfile>) {
+    return this.http.patch<UserProfile>(`${this.apiUrl}/profile/`, data);
   }
 }

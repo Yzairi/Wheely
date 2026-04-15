@@ -10,10 +10,58 @@
   @if (loading()) {
   <div class="loading">Chargement...</div>
   } @else if (profile()) {
-  <div class="info-content">
-    <p class="info-line">{{ fullName }}</p>
-    <p class="info-line">{{ profile()!.phone_number || 'Non renseigné' }}</p>
-    <p class="info-line">{{ profile()!.email }}</p>
-  </div>
+  <form class="info-form" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="identity-card">
+      <div class="identity-text">
+        <p class="identity-name">{{ fullName || 'Profil utilisateur' }}</p>
+        <p class="identity-email">{{ profile()!.email }}</p>
+      </div>
+    </div>
+
+    <div class="form-grid">
+
+      <label class="field">
+        <span>Prénom</span>
+        <input type="text" formControlName="first_name" placeholder="Votre prénom" />
+      </label>
+
+      <label class="field">
+        <span>Nom</span>
+        <input type="text" formControlName="last_name" placeholder="Votre nom" />
+      </label>
+
+      <label class="field">
+        <span>Email</span>
+        <input type="email" formControlName="email" placeholder="vous@mail.com" />
+      </label>
+
+      <label class="field">
+        <span>Téléphone</span>
+        <input type="tel" formControlName="phone_number" placeholder="+33 6 12 34 56 78" />
+      </label>
+    </div>
+
+    @if (form.controls.username.touched && form.controls.username.invalid) {
+    <p class="message error">Le pseudo est requis.</p>
+    }
+
+    @if (form.controls.email.touched && form.controls.email.invalid) {
+    <p class="message error">Merci de saisir une adresse email valide.</p>
+    }
+
+    @if (errorMessage()) {
+    <p class="message error">{{ errorMessage() }}</p>
+    }
+
+    @if (successMessage()) {
+    <p class="message success">{{ successMessage() }}</p>
+    }
+
+    <div class="actions">
+      <button type="submit" class="save-button" [disabled]="saving()">
+        {{ saving() ? 'Enregistrement...' : 'Enregistrer' }}
+      </button>
+    </div>
+  </form>
   }
 </section>

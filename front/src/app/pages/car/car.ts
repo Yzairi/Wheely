@@ -16,6 +16,38 @@ export class Car implements OnInit {
   private readonly carService = inject(CarService);
   protected readonly cars = this.carService.cars;
   protected readonly carPendingDeletion = signal<any | null>(null);
+  protected readonly feedbackOpen = signal<Record<number, boolean>>({});
+
+  protected getStars(rating: number | null | undefined): string {
+    if (!rating) {
+      return '☆☆☆☆☆';
+    }
+    const rounded = Math.round(rating);
+    const filled = '★'.repeat(rounded);
+    const empty = '☆'.repeat(5 - rounded);
+    return `${filled}${empty}`;
+  }
+
+  protected formatDate(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  protected formatCommentDate(dateString: string): string {
+    return this.formatDate(dateString);
+  }
+
+  protected toggleFeedback(carId: number): void {
+    const open = this.feedbackOpen();
+    this.feedbackOpen.set({
+      ...open,
+      [carId]: !open[carId],
+    });
+  }
 
   ngOnInit(): void {
     this.refresh();

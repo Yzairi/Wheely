@@ -129,6 +129,27 @@
   color: #666;
 }
 
+.car-rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #333;
+  margin-top: 8px;
+}
+
+.car-rating .stars {
+  color: #f5a623;
+}
+
+.car-rating .rating-value {
+  font-weight: 600;
+}
+
+.car-rating .comments-count {
+  color: #666;
+}
+
 .car-meta {
   display: flex;
   align-items: baseline;

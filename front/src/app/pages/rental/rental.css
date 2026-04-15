@@ -51,6 +51,49 @@
   border-radius: 8px;
   font-weight: 600;
   font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rating-value {
+  font-weight: 700;
+  color: #2e7d32;
+}
+
+.comments-card {
+  background-color: #e8f5e9;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 24px;
+}
+
+.comments-title {
+  margin: 0 0 16px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+}
+
+.comment {
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.comment:last-child {
+  border-bottom: none;
+}
+
+.comment-text {
+  margin: 0 0 8px 0;
+  font-size: 15px;
+  color: #333;
+}
+
+.comment-meta {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
 }
 
 .reservation-card {

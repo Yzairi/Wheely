@@ -12,6 +12,15 @@
 
   <div class="car-image-container">
     <img [src]="getCarPhoto(car())" [alt]="car().brand + ' ' + car().model" class="car-image" />
+
+    @if (car().average_rating) {
+    <div class="rating">
+      {{ getStars(car().average_rating) }}
+      <span class="rating-value">{{ car().average_rating.toFixed(1) }}/5</span>
+    </div>
+    } @else {
+    <div class="rating">Pas encore de note</div>
+    }
   </div>
 
   <div class="reservation-card">
@@ -33,6 +42,7 @@
       <li>{{ car().gearbox }}</li>
       <li>{{ car().doors }} portes</li>
     </ul>
+
     @if (car().equipments && car().equipments.length > 0) {
     <div class="options-section">
       <h3 class="options-title">Option</h3>
@@ -45,6 +55,20 @@
     }
   </div>
 
+  <!-- ⭐ COMMENTAIRES -->
+  @if (car().comments && car().comments.length > 0) {
+  <div class="comments-card">
+    <h2 class="comments-title">Commentaires</h2>
+    @for (comment of car().comments; track comment.created_at) {
+    <div class="comment">
+      <p class="comment-text">{{ comment.text }}</p>
+      <p class="comment-meta">{{ formatCommentDate(comment.created_at) }}</p>
+    </div>
+    }
+  </div>
+  }
+
+  <!-- 🗺️ LOCALISATION -->
   @if (hasCarLocation(car())) {
   <div class="map-section">
     <h2 class="map-section-title">Localisation du véhicule</h2>
@@ -60,5 +84,6 @@
     <p class="map-fallback">Position précise non renseignée pour cette annonce.</p>
   </div>
   }
+
 </div>
 }
