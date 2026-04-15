@@ -1,5 +1,29 @@
-<app-navbar></app-navbar>
+<div class="app-shell">
+  <app-navbar></app-navbar>
 
-<main class="page-wrapper">
-  <router-outlet></router-outlet>
-</main>
+  <main class="page-wrapper">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <div class="site-footer__brand">
+        <div>
+          <p>Wheely</p>
+          <span>La bonne voiture, au bon endroit, au bon moment.</span>
+        </div>
+      </div>
+
+      <div class="site-footer__links">
+        <a routerLink="/">Accueil</a>
+        @if (isLoggedIn()) {
+          <a routerLink="/account">Mon compte</a>
+        } @else {
+          <a routerLink="/login">Connexion</a>
+        }
+      </div>
+
+      <p class="site-footer__meta">© 2026 Wheely. Location de voiture entre particuliers.</p>
+    </div>
+  </footer>
+</div>

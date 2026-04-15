@@ -1,51 +1,104 @@
-<div class="home-container">
-  <div class="logo-section">
-    <div class="logo-wrapper">
-      <img src="/logo.png" alt="Wheely" class="logo" />
-      <h1 class="site-name">Wheely</h1>
+<div class="home-page">
+  <section class="hero-section">
+    <div class="hero-copy">
+      <p class="eyebrow">Location de voiture entre particuliers</p>
+
+      <div class="brand-lockup">
+
+        <div>
+          <h1>Roulez simplement, trouvez localement.</h1>
+          <p class="hero-description">
+            Wheely vous aide a trouver une voiture disponible autour de vous avec une
+            recherche claire, rapide et centree sur vos dates reelles.
+          </p>
+        </div>
+      </div>
+
+      <div class="hero-stats" aria-label="Points forts">
+        @for (figure of keyFigures; track figure.label) {
+          <article class="stat-card">
+            <strong>{{ figure.value }}</strong>
+            <span>{{ figure.label }}</span>
+          </article>
+        }      </div>
     </div>
-    <p class="tagline">Location de voiture entre particuliers</p>
-  </div>
 
-  <div class="search-card">
-    <form [formGroup]="form" (ngSubmit)="submit()">
-      <div class="form-group">
-        <label for="home-search-address">Adresse</label>
-        <input
-          type="text"
-          id="home-search-address"
-          name="searchAddress"
-          placeholder="Saisissez une adresse"
-          autocomplete="off"
-        />
-        @if (addressError()) {
-          <p class="error-message">Choisissez une adresse dans la liste des suggestions.</p>
-        }
+    <aside class="search-shell" id="search-panel">
+      <div class="search-card">
+        <div class="search-card-header">
+          <p class="search-kicker">Commencer</p>
+          <h2>Trouvez le bon vehicule autour de vous</h2>
+          <p>
+            Gardez votre filtre actuel, mais avec une mise en page plus lisible et plus
+            engageante.
+          </p>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="submit()">
+          <div class="form-group form-group-full">
+            <label for="home-search-address">Adresse</label>
+            <input
+              type="text"
+              id="home-search-address"
+              name="searchAddress"
+              placeholder="Saisissez une adresse"
+              autocomplete="off"
+            />
+            @if (addressError()) {
+              <p class="error-message">Choisissez une adresse dans la liste des suggestions.</p>
+            }
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="radius_km">Rayon (km)</label>
+              <input
+                type="number"
+                id="radius_km"
+                formControlName="radius_km"
+                min="1"
+                max="200"
+                step="1"
+              />
+              @if (form.get('radius_km')?.invalid && form.get('radius_km')?.touched) {
+                <p class="error-message">Entre 1 et 200 km.</p>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="start_date">Date debut</label>
+              <input id="start_date" type="date" formControlName="start_date" [min]="today" />
+            </div>
+
+            <div class="form-group">
+              <label for="end_date">Date fin</label>
+              <input id="end_date" type="date" formControlName="end_date" [min]="today" />
+            </div>
+          </div>
+
+          <button type="submit" [disabled]="form.invalid">Voir les voitures disponibles</button>
+
+          @if (form.errors?.['dateRangeInvalid'] && (form.touched || form.dirty)) {
+            <p class="error-message">La date de fin doit etre posterieure a la date de debut.</p>
+          }
+        </form>
       </div>
+    </aside>
+  </section>
 
-      <div class="form-group">
-        <label for="radius_km">Rayon (km)</label>
-        <input type="number" id="radius_km" formControlName="radius_km" min="1" max="200" step="1" />
-        @if (form.get('radius_km')?.invalid && form.get('radius_km')?.touched) {
-          <p class="error-message">Entre 1 et 200 km.</p>
-        }
-      </div>
+  <section class="benefits-section" aria-label="Presentation de la plateforme">
+    <div class="section-heading">
+      <p class="eyebrow">Voyagez autrement</p>
+      <h2>La bonne voiture, au bon endroit, au bon moment.</h2>
+    </div>
 
-      <div class="form-group">
-        <label>Date début</label>
-        <input type="date" formControlName="start_date" />
-      </div>
-
-      <div class="form-group">
-        <label>Date fin</label>
-        <input type="date" formControlName="end_date" />
-      </div>
-
-      <button type="submit" [disabled]="form.invalid">Rechercher</button>
-
-      @if (form.errors?.['dateRangeInvalid'] && (form.touched || form.dirty)) {
-        <p class="error-message">La date de fin doit être postérieure à la date de début.</p>
+    <div class="benefits-grid">
+      @for (benefit of benefits; track benefit.title) {
+        <article class="benefit-card">
+          <h3>{{ benefit.title }}</h3>
+          <p>{{ benefit.description }}</p>
+        </article>
       }
-    </form>
-  </div>
+    </div>
+  </section>
 </div>

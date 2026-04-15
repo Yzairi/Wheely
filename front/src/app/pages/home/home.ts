@@ -36,6 +36,30 @@ export class Home implements OnInit {
   private gmapsLoader = inject(GoogleMapsLoaderService);
   private injector = inject(Injector);
 
+  protected readonly today = new Date().toISOString().split('T')[0];
+  protected readonly keyFigures = [
+    { value: 'Local', label: 'des vehicules proches de chez vous' },
+    { value: '0%', label: 'de commission pour garder des frais plus bas' },
+    { value: 'Flexible', label: 'des locations adaptees a vos dates et a vos besoins' },
+  ];
+  protected readonly benefits = [
+    {
+      title: 'Recherche rapide',
+      description:
+        'Trouvez une voiture selon une adresse precise, une periode et un rayon adapte a votre besoin.',
+    },
+    {
+      title: 'Entre particuliers',
+      description:
+        'Une experience plus flexible pour louer un vehicule utile, pratique ou plaisir sans circuit complexe.',
+    },
+    {
+      title: 'Reservation plus lisible',
+      description:
+        'Les dates, la zone de recherche et les resultats restent coherents pour enchainer la recherche sans friction.',
+    },
+  ];
+
   protected readonly selectedLocation = signal<{
     lat: number;
     lng: number;
